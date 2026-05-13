@@ -1,0 +1,43 @@
+.root {
+
+    -color-neutral0: #1F2937;
+    -color-neutral1: #9CA3AF;
+    -color-neutral2: #D1D5DB;
+    -color-neutral3: #E5E7EB;
+    -color-neutral4: #ebedf2;
+    -color-neutral5: #F3F4F6;
+    -color-neutral6: white;
+
+    -fx-text-fill: -color-neutral0;
+
+}
+
+/* layout */
+
+.container {
+
+    -fx-background-color: -color-neutral6;
+    -fx-padding: 1em;
+
+}
+
+.sidebar {
+
+    -fx-background-color: -color-neutral5;
+    -fx-background-radius: 1em;
+
+}
+
+/* components */
+
+.button {
+
+    -fx-background-radius: 1em;
+    -fx-padding: 1em;
+
+    -fx-background-color: black;
+    -fx-text-fill: white;
+
+    -fx-cursor: hand;
+
+}
