@@ -24,7 +24,7 @@ public class LessonsList extends GridPane {
         LessonCard card2 = new LessonCard();
         LessonCard card3 = new LessonCard();
 
-        for (int row = 0; row < 3; row++) {
+        for (int row = 0; row < 1; row++) {
             for (int col = 0; col < 3; col++) {
                 LessonCard card = new LessonCard();
                 add(card, col, row);
