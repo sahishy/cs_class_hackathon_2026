@@ -12,32 +12,126 @@
 
 }
 
-/* layout */
+/* --- LAYOUT --- */
 
-.container {
+.main {
 
     -fx-background-color: -color-neutral6;
-    -fx-padding: 1em;
+    -fx-padding: 2em;
 
 }
 
 .sidebar {
 
-    -fx-background-color: -color-neutral5;
+    -fx-background-color: -color-neutral4;
     -fx-background-radius: 1em;
+
+    -fx-padding: 1em;
 
 }
 
-/* components */
+.sidebar-tab {
+
+    -fx-background-color: -color-neutral6;
+    -fx-background-radius: 1em;
+
+    -fx-alignment: center;
+
+    -fx-padding: 0.6em 0 0.6em 0;
+
+}
+
+.screen {
+
+    -fx-padding: 2em;
+
+}
+
+/* --- UI --- */
+
+.h1 {
+
+    -fx-font-size: 2em;
+    -fx-font-weight: bold;
+    
+}
+
+.h2 {
+
+    -fx-font-size: 1.6em;
+    -fx-font-weight: bold;
+
+}
+
+.p {
+
+    -fx-text-fill: -color-neutral1;
+    -fx-font-size: 1em;
+
+}
+
+.card {
+
+    -fx-background-color: -color-neutral5;
+    -fx-background-radius: 1em;
+
+    -fx-padding: 1em;
+
+}
 
 .button {
 
     -fx-background-radius: 1em;
     -fx-padding: 1em;
 
-    -fx-background-color: black;
-    -fx-text-fill: white;
+    -fx-background-color: -color-neutral0;
+    -fx-text-fill: -color-neutral6;
 
     -fx-cursor: hand;
 
+}
+
+.button:hover {
+
+    -fx-background-color: black;
+
+}
+
+.scroll {
+
+    -fx-background-color: transparent;
+
+/* huype so let me install the necessary java stuff */
+}
+.scroll .viewport {
+
+    -fx-background-color: transparent;
+
+}
+
+
+/* --- FEATURES --- */
+
+/* home */
+
+.lessons-list {
+
+    /* -fx-background-color: rgb(178, 133, 133); */
+
+}
+
+.question-input {
+
+    /* -fx-background-color: rgb(148, 148, 174); */
+
+}
+
+.test {
+    -fx-background-color: rgb(178, 133, 133);
+}
+.test2 {
+    -fx-background-color: rgb(148, 148, 174);
+}
+.test3 {
+    /* -fx-background-color: rgb(148, 170, 174); */
 }

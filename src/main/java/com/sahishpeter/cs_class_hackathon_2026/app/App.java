@@ -15,6 +15,8 @@ public class App extends Application {
         scene.getStylesheets().add(App.class.getResource("/styles.css").toExternalForm());
 
         stage.setTitle("HishHuyPT Calculator: Deluxe Edition");
+        stage.setMinWidth(640);
+        stage.setMinHeight(360);
         stage.setScene(scene);
         stage.show();
         
