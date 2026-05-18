@@ -47,6 +47,12 @@
 
 }
 
+.screen.scroll {
+
+    -fx-padding: 2em 2em 0 2em;
+
+}
+
 /* --- UI --- */
 
 .h1 {
@@ -101,12 +107,37 @@
 
     -fx-background-color: transparent;
 
-/* huype so let me install the necessary java stuff */
 }
 .scroll .viewport {
 
     -fx-background-color: transparent;
 
+}
+.scroll-pane > .scroll-bar:vertical,
+.scroll-pane > .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+.scroll-pane > .scroll-bar > .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 1em;
+}
+.scroll-pane > .scroll-bar > .thumb {
+    -fx-background-color: -color-neutral3;
+    -fx-background-radius: 1em;
+}
+.scroll-pane > .scroll-bar > .thumb:hover {
+    -fx-background-color: -color-neutral2;
+}
+.scroll-bar .increment-button, 
+.scroll-bar .decrement-button {
+    -fx-background-color: null;
+    -fx-padding: 0;
+}
+.scroll-bar .increment-arrow, 
+.scroll-bar .decrement-arrow {
+    -fx-background-color: null;
+    -fx-padding: 0;
+    -fx-shape: null;
 }
 
 

@@ -15,9 +15,11 @@ public class AppLayout extends HBox {
         Sidebar sidebar = new Sidebar();
 
         VBox screen = new VBox();
+        screen.setFillWidth(true);
     
         HomeScreen homeScreen = new HomeScreen();
         screen.getChildren().add(homeScreen);
+        VBox.setVgrow(homeScreen, Priority.ALWAYS);
 
         HBox.setHgrow(sidebar, Priority.ALWAYS);
         HBox.setHgrow(screen, Priority.ALWAYS);

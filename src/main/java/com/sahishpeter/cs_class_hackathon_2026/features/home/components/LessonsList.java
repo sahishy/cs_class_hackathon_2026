@@ -1,5 +1,7 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.home.components;
 
+import com.sahishpeter.cs_class_hackathon_2026.features.lessons.services.LessonService;
+import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
@@ -20,18 +22,25 @@ public class LessonsList extends GridPane {
         ColumnConstraints column3 = new ColumnConstraints();
         column3.setPercentWidth(COLUMN_WIDTH);
 
-        LessonCard card1 = new LessonCard();
-        LessonCard card2 = new LessonCard();
-        LessonCard card3 = new LessonCard();
-
-        for (int row = 0; row < 1; row++) {
-            for (int col = 0; col < 3; col++) {
-                LessonCard card = new LessonCard();
-                add(card, col, row);
-            }
-        }
+        buildLessons();
 
         getColumnConstraints().addAll(column1, column2, column3);
+
+    }
+
+    private void buildLessons() {
+
+        Lesson[] lessons = LessonService.getLessons();
+
+        for(int i = 0; i < lessons.length; i++) {
+
+            int row = i / 3;
+            int col = i % 3;
+
+            LessonCard card = new LessonCard(lessons[i]);
+            add(card, col, row);
+
+        }
 
     }
 
