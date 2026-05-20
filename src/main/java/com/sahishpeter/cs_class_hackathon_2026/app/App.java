@@ -11,11 +11,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        // Firebase.initialize();
+        
+        Firebase.initialize();
 
-        // CurrentUserService currentUserService = new CurrentUserService();
-        // UserService userService = new UserService();
-        // userService.upsertUser(currentUserService.getCurrentUserId(), "Sahish", "Durgam");
+        CurrentUserService currentUserService = new CurrentUserService();
+        UserService userService = new UserService();
+        userService.upsertUser(currentUserService.getCurrentUserId(), "Sahish", "Durgam");
         
         AppLayout appLayout = new AppLayout();
 

@@ -3,6 +3,8 @@ module com.sahishpeter.cs_class_hackathon_2026 {
     requires javafx.base;
     requires exp4j;
     requires javafx.graphics;
+    requires com.google.api.apicommon;
+    requires com.google.auth;
     requires google.cloud.core;
     requires google.cloud.firestore;
     requires firebase.admin;

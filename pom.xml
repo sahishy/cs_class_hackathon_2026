@@ -36,11 +36,11 @@
             <artifactId>google-cloud-core</artifactId>
             <version>2.38.0</version>
         </dependency>
-        <!-- <dependency>
+        <dependency>
             <groupId>com.google.api</groupId>
             <artifactId>api-common</artifactId>
             <version>2.62.0</version>
-        </dependency> -->
+        </dependency>
 
         <dependency>
             <groupId>org.openjfx</groupId>
