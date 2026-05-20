@@ -156,6 +156,32 @@
 
 }
 
+/* graphing */
+
+.circle {
+    -fx-fill: rgb(241, 13, 253);
+}
+
+.graph {
+
+    -fx-border-color: black;
+
+}
+
+.point-holder {
+    
+}
+
+.axis {
+    -fx-fill: black;
+}
+
+.gridline {
+    -fx-fill: -color-neutral2;
+}
+
+/* testing */
+
 .test {
     -fx-background-color: rgb(178, 133, 133);
 }
