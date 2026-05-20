@@ -1,5 +1,7 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.calculator.components;
 
+import com.sahishpeter.cs_class_hackathon_2026.features.calculator.types.Point;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -162,6 +164,10 @@ public class Calculator extends VBox {
 
         return normalized;
 
+    }
+
+    private void connectPoint(Point a, Point b){
+        return;
     }
 
 }
