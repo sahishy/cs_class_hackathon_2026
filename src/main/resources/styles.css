@@ -32,12 +32,23 @@
 
 .sidebar-tab {
 
-    -fx-background-color: -color-neutral6;
+    -fx-background-color: transparent;
     -fx-background-radius: 1em;
 
-    -fx-alignment: center;
+    -fx-padding: 0.6em 1em 0.6em 1em;
 
-    -fx-padding: 0.6em 0 0.6em 0;
+}
+.sidebar-tab.active {
+
+    -fx-background-color: -color-neutral6;
+
+}
+
+.sidebar-label {
+
+    -fx-font-weight: bold;
+
+    -fx-padding: 0 0 0 0.8em;
 
 }
 
@@ -65,6 +76,13 @@
 .h2 {
 
     -fx-font-size: 1.6em;
+    -fx-font-weight: bold;
+
+}
+
+.h3 {
+
+    -fx-font-size: 1em;
     -fx-font-weight: bold;
 
 }
@@ -152,7 +170,14 @@
 
 .question-input {
 
-    /* -fx-background-color: rgb(148, 148, 174); */
+    -fx-background-color: -color-neutral5;
+    -fx-padding: 1em 1.6em;
+    -fx-background-radius: 8em;
+
+}
+.question-input:hover {
+
+    -fx-background-color: -color-neutral4;
 
 }
 
@@ -178,6 +203,21 @@
 
 .gridline {
     -fx-fill: -color-neutral2;
+}
+
+/* lessons */
+
+.lesson-thumbnail {
+
+    -fx-background-color: white;
+    -fx-background-radius: 1em;
+
+}
+
+.lesson-info {
+
+    -fx-padding: 0.4em;
+
 }
 
 /* testing */

@@ -40,10 +40,12 @@ public class HomeScreen extends VBox {
         container.getChildren().addAll(
             questionInput,
             lessonsSectionLabel,
-            calc,
+            // calc,
             lessonsList
             
         );
+
+        
 
         scrollPane.setContent(container);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);

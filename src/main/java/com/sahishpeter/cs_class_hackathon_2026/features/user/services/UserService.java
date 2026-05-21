@@ -1,4 +1,4 @@
-package com.sahishpeter.cs_class_hackathon_2026.shared.services;
+package com.sahishpeter.cs_class_hackathon_2026.features.user.services;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +15,13 @@ public class UserService {
     }
 
     public void upsertUser(String userId, String firstName, String lastName) {
+        
         Map<String, Object> payload = new HashMap<>();
         payload.put("firstName", firstName);
         payload.put("lastName", lastName);
 
         firestore.collection("users").document(userId).set(payload);
+
     }
+    
 }

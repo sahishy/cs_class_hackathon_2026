@@ -10,5 +10,6 @@ module com.sahishpeter.cs_class_hackathon_2026 {
     requires firebase.admin;
     requires com.google.auth.oauth2;
     requires io.github.cdimascio.dotenv.java;
+    requires java.logging;
     exports com.sahishpeter.cs_class_hackathon_2026.app;
 }

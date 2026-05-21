@@ -26,7 +26,7 @@ public class Calculator extends VBox {
         Label label = new Label("hwee");
         label.getStyleClass().add("test4");
 
-        TextField input = new TextField("y = 2x");
+        TextField input = new TextField("y = x");
         input.textProperty().addListener((observable, oldValue, newValue) -> {
             function = normalizeFunction(newValue);
             updateGraph();
@@ -167,6 +167,7 @@ public class Calculator extends VBox {
     }
 
     private void connectPoint(Point a, Point b){
+        
         return;
     }
 

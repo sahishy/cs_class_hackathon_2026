@@ -13,12 +13,18 @@ public class LessonCard extends VBox {
         Card card = new Card();
         card.setPrefHeight(256);
 
-        VBox thumbnail = new VBox();
-        thumbnail.setFillWidth(true);
+        VBox thumbnailHolder = new VBox();
+        thumbnailHolder.setFillWidth(true);
+        thumbnailHolder.setPrefHeight(128);
+        thumbnailHolder.getStyleClass().add("lesson-thumbnail");
 
+        VBox infoHolder = new VBox();
+        infoHolder.getStyleClass().add("lesson-info");
         Label label = new Label(lesson.title());
+        label.getStyleClass().add("h3");
+        infoHolder.getChildren().add(label);
 
-        card.getChildren().addAll(thumbnail, label);
+        card.getChildren().addAll(thumbnailHolder, infoHolder);
 
         getChildren().add(card);
 

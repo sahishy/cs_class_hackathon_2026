@@ -19,30 +19,34 @@ public class LessonService {
     }
 
     public ListenerRegistration subscribeToLessons(String userId, Consumer<List<Lesson>> onChange) {
+
         return firestore.collection("lessons")
             .whereEqualTo("userId", userId)
             .addSnapshotListener((snapshot, error) -> {
+                
                 if (error != null || snapshot == null) {
                     return;
                 }
 
                 List<Lesson> lessons = new ArrayList<>();
+
                 for (QueryDocumentSnapshot document : snapshot) {
+
                     String lessonUserId = document.getString("userId");
                     String title = document.getString("title");
 
-                    if (lessonUserId == null || title == null) {
-                        continue;
-                    }
-
                     lessons.add(new Lesson(lessonUserId, title));
+
                 }
 
                 onChange.accept(lessons);
+
             });
+
     }
 
     public void upsertLesson(String lessonId, Lesson lesson) {
         firestore.collection("lessons").document(lessonId).set(lesson);
     }
+
 }
