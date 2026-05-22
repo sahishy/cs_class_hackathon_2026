@@ -1,12 +1,15 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.calculator.components;
 
+import java.util.ArrayList;
+
 import com.sahishpeter.cs_class_hackathon_2026.features.calculator.types.Point;
 
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -20,11 +23,13 @@ public class Calculator extends VBox {
     private String function = "";
     private final int graphSizeCartesian = 10;
     private final int graphSizePixels = 300;
+    private final double radius = 1;
+    private final Color lineColor = Color.PINK;
+
+    ArrayList<Point> points = new ArrayList<>();
 
     public Calculator() {
 
-        Label label = new Label("hwee");
-        label.getStyleClass().add("test4");
 
         TextField input = new TextField("y = x");
         input.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -37,13 +42,14 @@ public class Calculator extends VBox {
         buildGraph();
         updateGraph();
 
-        getChildren().addAll(label, input, graph);
+        getChildren().addAll(input, graph);
 
     }
 
     private void updateGraph() {
 
         pointHolder.getChildren().clear();
+        points.clear();
 
         if(function.isBlank()) {
             return;
@@ -67,7 +73,9 @@ public class Calculator extends VBox {
 
         for (double x = xMin; x <= xMax; x += step) {
             graphPoint(expression, x);
+
         }
+        connectAllPoints();
 
     }
 
@@ -125,17 +133,14 @@ public class Calculator extends VBox {
         double xPixels = (x * scalingFactor) + (graphSizePixels / 2.0);
         double yPixels = (graphSizePixels / 2.0) - (y * scalingFactor);
 
-        if (xPixels < 0 || xPixels > graphSizePixels || yPixels < 0 || yPixels > graphSizePixels) {
-            return;
-        }
-
-        double radius = 1;
+        
 
         Circle circle = new Circle(radius);
-        circle.getStyleClass().add("circle");
+        circle.setFill(lineColor);
         circle.relocate(xPixels - radius, yPixels - radius);
-
         pointHolder.getChildren().add(circle);
+        Point point = new Point(xPixels, yPixels);
+        points.add(point);
 
     }
 
@@ -166,9 +171,19 @@ public class Calculator extends VBox {
 
     }
 
-    private void connectPoint(Point a, Point b){
-        
-        return;
+    private Line connectPoint(Point a, Point b){
+        Line line = new Line(a.x(), a.y(), b.x(), b.y());
+        return line;
+    }
+
+    private void connectAllPoints(){
+        for (int i = 0; i < points.size() - 1; i++) {
+            Line connectedLine = connectPoint(points.get(i), points.get(i+1));
+            connectedLine.setStrokeWidth(2 * radius);
+            connectedLine.setStroke(lineColor);
+            pointHolder.getChildren().add(connectedLine);
+        }
+
     }
 
 }

@@ -183,10 +183,6 @@
 
 /* graphing */
 
-.circle {
-    -fx-fill: rgb(241, 13, 253);
-}
-
 .graph {
 
     -fx-border-color: black;
