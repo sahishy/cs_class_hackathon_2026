@@ -108,18 +108,27 @@
     -fx-background-radius: 1em;
     -fx-padding: 1em;
 
-    -fx-background-color: -color-neutral0;
-    -fx-text-fill: -color-neutral6;
-
     -fx-cursor: hand;
 
 }
-
-.button:hover {
-
-    -fx-background-color: black;
-
+.button.primary {
+    -fx-background-color: -color-neutral0;
+    -fx-text-fill: -color-neutral6;
 }
+.button.primary:hover {
+    -fx-background-color: black;
+}
+.button.secondary {
+    -fx-background-color: -color-neutral6;
+    -fx-text-fill: -color-neutral0;
+    -fx-border-radius: 1em;
+    -fx-border-color: -color-neutral4;
+    -fx-border-width: 1px;
+}
+.button.secondary:hover {
+    -fx-background-color: -color-neutral5;
+}
+
 
 .scroll {
 
@@ -314,32 +323,8 @@
     -fx-padding: 0.75em 0 0 0;
 }
 
-.lesson-pagination-button {
-    -fx-background-color: -color-neutral6;
-    -fx-text-fill: -color-neutral0;
-    -fx-border-color: -color-neutral2;
-    -fx-border-radius: 999em;
-    -fx-background-radius: 999em;
-    -fx-padding: 0.7em 1.4em;
-}
-
-.lesson-pagination-button-primary {
-    -fx-background-color: -color-neutral0;
-    -fx-text-fill: -color-neutral6;
-    -fx-border-color: transparent;
-}
-
 .lesson-step-label {
     -fx-text-fill: -color-neutral0;
-}
-
-.lesson-back-button {
-    -fx-background-color: -color-neutral6;
-    -fx-text-fill: -color-neutral0;
-    -fx-border-color: -color-neutral2;
-    -fx-border-radius: 999em;
-    -fx-background-radius: 999em;
-    -fx-padding: 0.55em 1.1em;
 }
 
 .lesson-card:hover {

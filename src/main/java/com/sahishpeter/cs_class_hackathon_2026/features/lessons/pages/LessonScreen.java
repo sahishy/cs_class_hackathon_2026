@@ -64,7 +64,7 @@ public class LessonScreen extends VBox {
         topRow.setAlignment(Pos.CENTER_LEFT);
 
         Button backButton = new Button("Back");
-        backButton.getStyleClass().add("lesson-back-button");
+        backButton.getStyleClass().add("secondary");
         backButton.setOnAction(event -> onBack.run());
 
         Label lessonTitle = new Label(displayTitle(lesson));
@@ -126,6 +126,7 @@ public class LessonScreen extends VBox {
     }
 
     private HBox buildInputDock() {
+
         HBox inputDock = new HBox(8);
         inputDock.getStyleClass().add("lesson-input-dock");
         inputDock.setAlignment(Pos.CENTER_LEFT);
@@ -157,9 +158,11 @@ public class LessonScreen extends VBox {
         inputDock.getChildren().addAll(input, sendButton);
 
         return inputDock;
+
     }
 
     private VBox buildRightPane(Lesson lesson) {
+
         VBox rightPane = new VBox(12);
         rightPane.getStyleClass().add("lesson-right-pane");
         rightPane.setPrefWidth(420);
@@ -178,7 +181,7 @@ public class LessonScreen extends VBox {
         pagination.setAlignment(Pos.CENTER);
 
         Button prev = new Button("Previous");
-        prev.getStyleClass().add("lesson-pagination-button");
+        prev.getStyleClass().addAll("secondary");
         prev.setOnAction(event -> {
             if (currentStep > 0) {
                 currentStep--;
@@ -187,7 +190,7 @@ public class LessonScreen extends VBox {
         });
 
         Button next = new Button("Next");
-        next.getStyleClass().addAll("lesson-pagination-button", "lesson-pagination-button-primary");
+        next.getStyleClass().addAll("primary");
         next.setOnAction(event -> {
             int max = Math.max(0, lesson.steps().size() - 1);
             if (currentStep < max) {
@@ -223,7 +226,7 @@ public class LessonScreen extends VBox {
         List<Lesson.LessonStep> steps = lesson.steps() == null ? List.of() : lesson.steps();
         if (steps.isEmpty()) {
             long now = System.currentTimeMillis();
-            messages.add(new LessonMessage("ai-intro", "ai", "Let’s walk through this lesson together.", null, now));
+            messages.add(new LessonMessage("ai-intro", "ai", "Let's walk through this lesson together.", null, now));
             messages.add(new LessonMessage("ai-placeholder", "ai", "Lesson steps will appear here soon.", null, now + 1));
             return;
         }
