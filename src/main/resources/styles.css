@@ -238,3 +238,114 @@
 
 
 
+
+
+/* lesson screen */
+.lesson-content {
+    -fx-padding: 0.5em 0 0 0;
+}
+
+.lesson-left-pane,
+.lesson-right-pane {
+    -fx-fill-width: true;
+}
+
+.lesson-chat-card,
+.lesson-right-card {
+    -fx-background-color: -color-neutral6;
+    -fx-border-color: -color-neutral3;
+    -fx-border-radius: 1em;
+    -fx-background-radius: 1em;
+}
+
+.lesson-chat-card {
+    -fx-padding: 1em;
+}
+
+.lesson-messages-container {
+    -fx-spacing: 0.75em;
+    -fx-padding: 0.25em;
+}
+
+.lesson-message-row {
+    -fx-alignment: center-left;
+}
+
+.lesson-bubble {
+    -fx-padding: 0.8em 1em;
+    -fx-background-radius: 1em;
+    -fx-border-radius: 1em;
+    -fx-font-size: 1em;
+}
+
+.lesson-bubble-ai {
+    -fx-background-color: -color-neutral5;
+    -fx-border-color: -color-neutral3;
+    -fx-text-fill: -color-neutral0;
+}
+
+.lesson-bubble-user {
+    -fx-background-color: -color-neutral0;
+    -fx-text-fill: -color-neutral6;
+}
+
+.lesson-input-dock {
+    -fx-padding: 0.5em 0 0 0;
+}
+
+.lesson-input {
+    -fx-background-color: -color-neutral5;
+    -fx-background-radius: 999em;
+    -fx-border-radius: 999em;
+    -fx-border-color: -color-neutral3;
+    -fx-padding: 0.7em 1.1em;
+}
+
+.lesson-send-button {
+    -fx-background-radius: 999em;
+    -fx-min-width: 2.5em;
+    -fx-min-height: 2.5em;
+    -fx-max-width: 2.5em;
+    -fx-max-height: 2.5em;
+    -fx-padding: 0;
+}
+
+.lesson-right-card {
+    -fx-padding: 1em;
+}
+
+.lesson-pagination {
+    -fx-padding: 0.75em 0 0 0;
+}
+
+.lesson-pagination-button {
+    -fx-background-color: -color-neutral6;
+    -fx-text-fill: -color-neutral0;
+    -fx-border-color: -color-neutral2;
+    -fx-border-radius: 999em;
+    -fx-background-radius: 999em;
+    -fx-padding: 0.7em 1.4em;
+}
+
+.lesson-pagination-button-primary {
+    -fx-background-color: -color-neutral0;
+    -fx-text-fill: -color-neutral6;
+    -fx-border-color: transparent;
+}
+
+.lesson-step-label {
+    -fx-text-fill: -color-neutral0;
+}
+
+.lesson-back-button {
+    -fx-background-color: -color-neutral6;
+    -fx-text-fill: -color-neutral0;
+    -fx-border-color: -color-neutral2;
+    -fx-border-radius: 999em;
+    -fx-background-radius: 999em;
+    -fx-padding: 0.55em 1.1em;
+}
+
+.lesson-card:hover {
+    -fx-border-color: -color-neutral2;
+}

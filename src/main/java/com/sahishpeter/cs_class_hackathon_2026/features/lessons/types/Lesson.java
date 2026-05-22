@@ -1,8 +1,28 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.lessons.types;
 
+import java.util.List;
+
 public record Lesson(
+    String id,
     String userId,
-    String title
+    String question,
+    String title,
+    String topic,
+    String lessonTitle,
+    long createdAt,
+    List<LessonStep> steps
 ) {
+
+    public record LessonStep(
+        String title,
+        String explanation,
+        LessonGraph graph
+    ) {}
+
+    public record LessonGraph(
+        String type,
+        List<String> expressions,
+        List<List<Double>> points
+    ) {}
     
 }

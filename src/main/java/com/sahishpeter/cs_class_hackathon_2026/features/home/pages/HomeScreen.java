@@ -1,5 +1,7 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.home.pages;
 
+import java.util.function.Consumer;
+
 import com.sahishpeter.cs_class_hackathon_2026.features.calculator.components.Calculator;
 import com.sahishpeter.cs_class_hackathon_2026.features.home.components.LessonsList;
 import com.sahishpeter.cs_class_hackathon_2026.features.home.components.QuestionInput;
@@ -12,7 +14,7 @@ import javafx.scene.layout.VBox;
 
 public class HomeScreen extends VBox {
 
-    public HomeScreen() {
+    public HomeScreen(Consumer<String> onOpenLesson) {
 
         setSpacing(16);
         setFillWidth(true);
@@ -32,7 +34,7 @@ public class HomeScreen extends VBox {
         Label lessonsSectionLabel = new Label("My Lessons");
         lessonsSectionLabel.getStyleClass().add("h2");
 
-        LessonsList lessonsList = new LessonsList();
+        LessonsList lessonsList = new LessonsList(onOpenLesson);
 
         //test for peter
         Calculator calc = new Calculator();
@@ -44,8 +46,6 @@ public class HomeScreen extends VBox {
             lessonsList
             
         );
-
-        
 
         scrollPane.setContent(container);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);

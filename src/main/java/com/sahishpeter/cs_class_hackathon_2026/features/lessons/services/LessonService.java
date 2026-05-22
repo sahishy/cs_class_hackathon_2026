@@ -2,6 +2,7 @@ package com.sahishpeter.cs_class_hackathon_2026.features.lessons.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import com.google.cloud.firestore.Firestore;
@@ -23,7 +24,7 @@ public class LessonService {
         return firestore.collection("lessons")
             .whereEqualTo("userId", userId)
             .addSnapshotListener((snapshot, error) -> {
-                
+
                 if (error != null || snapshot == null) {
                     return;
                 }
@@ -32,10 +33,28 @@ public class LessonService {
 
                 for (QueryDocumentSnapshot document : snapshot) {
 
+                    String lessonId = document.getId();
                     String lessonUserId = document.getString("userId");
+                    String question = document.getString("question");
                     String title = document.getString("title");
+                    String topic = document.getString("topic");
+                    String lessonTitle = document.getString("lessonTitle");
 
-                    lessons.add(new Lesson(lessonUserId, title));
+                    Long createdAtValue = document.getLong("createdAt");
+                    long createdAt = createdAtValue != null ? createdAtValue : System.currentTimeMillis();
+
+                    List<Lesson.LessonStep> steps = parseSteps(document.get("steps"));
+
+                    lessons.add(new Lesson(
+                        lessonId,
+                        lessonUserId != null ? lessonUserId : "",
+                        question != null ? question : "",
+                        title != null ? title : "Untitled Lesson",
+                        topic != null ? topic : "",
+                        lessonTitle != null ? lessonTitle : "",
+                        createdAt,
+                        steps
+                    ));
 
                 }
 
@@ -47,6 +66,69 @@ public class LessonService {
 
     public void upsertLesson(String lessonId, Lesson lesson) {
         firestore.collection("lessons").document(lessonId).set(lesson);
+    }
+
+    private List<Lesson.LessonStep> parseSteps(Object rawSteps) {
+
+        List<Lesson.LessonStep> steps = new ArrayList<>();
+
+        if (!(rawSteps instanceof List<?> rawList)) {
+            return steps;
+        }
+
+        for (Object rawStep : rawList) {
+            if (!(rawStep instanceof Map<?, ?> map)) {
+                continue;
+            }
+
+            String title = map.get("title") instanceof String value ? value : "Step";
+            String explanation = map.get("explanation") instanceof String value ? value : "";
+            Lesson.LessonGraph graph = parseGraph(map.get("graph"));
+
+            steps.add(new Lesson.LessonStep(title, explanation, graph));
+        }
+
+        return steps;
+
+    }
+
+    private Lesson.LessonGraph parseGraph(Object rawGraph) {
+
+        if (!(rawGraph instanceof Map<?, ?> map)) {
+            return new Lesson.LessonGraph("function", List.of(), List.of());
+        }
+
+        String type = map.get("type") instanceof String value ? value : "function";
+
+        List<String> expressions = new ArrayList<>();
+        Object rawExpressions = map.get("expressions");
+        if (rawExpressions instanceof List<?> list) {
+            for (Object item : list) {
+                if (item instanceof String expression) {
+                    expressions.add(expression);
+                }
+            }
+        }
+
+        List<List<Double>> points = new ArrayList<>();
+        Object rawPoints = map.get("points");
+        if (rawPoints instanceof List<?> list) {
+            for (Object row : list) {
+                if (!(row instanceof List<?> pointPair) || pointPair.size() < 2) {
+                    continue;
+                }
+
+                Object xRaw = pointPair.get(0);
+                Object yRaw = pointPair.get(1);
+
+                if (xRaw instanceof Number x && yRaw instanceof Number y) {
+                    points.add(List.of(x.doubleValue(), y.doubleValue()));
+                }
+            }
+        }
+
+        return new Lesson.LessonGraph(type, expressions, points);
+
     }
 
 }

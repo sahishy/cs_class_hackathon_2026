@@ -26,16 +26,19 @@ public final class UserContext extends BaseContext {
     public synchronized void initialize() {
 
         if (initialized) {
+            System.out.println("[UserContext] initialize skipped (already initialized)");
             return;
         }
 
         initialized = true;
+        System.out.println("[UserContext] initialized with userId=" + currentUserId);
         notifyListeners();
 
     }
 
     @Override
     public synchronized void dispose() {
+        System.out.println("[UserContext] disposed");
         initialized = false;
     }
 

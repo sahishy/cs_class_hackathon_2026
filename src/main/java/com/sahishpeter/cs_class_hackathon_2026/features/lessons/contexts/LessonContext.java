@@ -22,6 +22,7 @@ public final class LessonContext extends BaseContext {
 
     private ListenerRegistration lessonListener;
     private boolean initialized;
+    private long listenerInstanceCount;
 
     public static LessonContext getInstance() {
         return INSTANCE;
@@ -31,10 +32,14 @@ public final class LessonContext extends BaseContext {
     public synchronized void initialize() {
 
         if (initialized) {
+            System.out.println("[LessonContext] initialize skipped (already initialized)");
             return;
         }
 
         String userId = UserContext.getCurrentUserId();
+        listenerInstanceCount++;
+        long listenerId = listenerInstanceCount;
+        System.out.println("[LessonContext] creating Firestore listener #" + listenerId + " for userId=" + userId);
         lessonListener = lessonService.subscribeToLessons(userId, updatedLessons -> {
 
             synchronized (this) {
@@ -47,6 +52,7 @@ public final class LessonContext extends BaseContext {
         });
 
         initialized = true;
+        System.out.println("[LessonContext] listener #" + listenerId + " initialized");
 
     }
 
@@ -54,6 +60,7 @@ public final class LessonContext extends BaseContext {
     public synchronized void dispose() {
 
         if (lessonListener != null) {
+            System.out.println("[LessonContext] removing Firestore listener");
             lessonListener.remove();
             lessonListener = null;
         }
