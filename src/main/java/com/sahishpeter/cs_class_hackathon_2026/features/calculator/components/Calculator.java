@@ -24,7 +24,7 @@ public class Calculator extends VBox {
     private final int graphSizeCartesian = 10;
     private final int graphSizePixels = 300;
     private final double radius = 1;
-    private final Color lineColor = Color.PINK;
+    private final Color lineColor = Color.RED;
 
     ArrayList<Point> points = new ArrayList<>();
 

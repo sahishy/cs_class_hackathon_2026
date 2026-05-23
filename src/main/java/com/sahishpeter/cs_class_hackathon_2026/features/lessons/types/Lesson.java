@@ -8,8 +8,9 @@ public record Lesson(
     String question,
     String title,
     String topic,
-    String lessonTitle,
     long createdAt,
+    long updatedAt,
+    LessonGraph thumbnailGraph,
     List<LessonStep> steps
 ) {
 

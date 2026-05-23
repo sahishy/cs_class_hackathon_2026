@@ -5,10 +5,13 @@ import java.util.function.Consumer;
 import com.sahishpeter.cs_class_hackathon_2026.features.calculator.components.Calculator;
 import com.sahishpeter.cs_class_hackathon_2026.features.home.components.LessonsList;
 import com.sahishpeter.cs_class_hackathon_2026.features.home.components.QuestionInput;
+import com.sahishpeter.cs_class_hackathon_2026.shared.components.EdgeFadeOverlay;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 
@@ -48,8 +51,14 @@ public class HomeScreen extends VBox {
         );
 
         scrollPane.setContent(container);
-        VBox.setVgrow(scrollPane, Priority.ALWAYS);
-        getChildren().add(scrollPane);
+
+        StackPane homeWithFade = new StackPane();
+        EdgeFadeOverlay homeBottomFade = new EdgeFadeOverlay(EdgeFadeOverlay.Direction.BOTTOM);
+        StackPane.setAlignment(homeBottomFade, Pos.BOTTOM_CENTER);
+        homeWithFade.getChildren().addAll(scrollPane, homeBottomFade);
+
+        VBox.setVgrow(homeWithFade, Priority.ALWAYS);
+        getChildren().add(homeWithFade);
 
     }
 

@@ -16,6 +16,8 @@ public class UserService {
 
     public void upsertUser(String userId, String firstName, String lastName) {
         
+        if(userId == null) return;
+
         Map<String, Object> payload = new HashMap<>();
         payload.put("firstName", firstName);
         payload.put("lastName", lastName);

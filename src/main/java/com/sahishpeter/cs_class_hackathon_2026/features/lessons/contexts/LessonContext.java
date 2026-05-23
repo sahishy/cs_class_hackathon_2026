@@ -64,7 +64,7 @@ public final class LessonContext extends BaseContext {
             lessonListener.remove();
             lessonListener = null;
         }
-        
+
         initialized = false;
 
     }
@@ -78,6 +78,7 @@ public final class LessonContext extends BaseContext {
     }
 
     public static void useLessons(Node node, Consumer<List<Lesson>> onLessonsChanged) {
+        System.out.println("[LessonContext] useLessons called for node=" + node);
         INSTANCE.useContext(node, () -> onLessonsChanged.accept(getLessons()));
     }
 

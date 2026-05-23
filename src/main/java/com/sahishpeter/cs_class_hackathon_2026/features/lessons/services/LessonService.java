@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.ListenerRegistration;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -17,6 +16,8 @@ public class LessonService {
 
     public LessonService() {
         this.firestore = Firebase.firestore();
+
+        System.out.println("[LessonService] REAL FIRESTORE LISTENER CREATED");
     }
 
     public ListenerRegistration subscribeToLessons(String userId, Consumer<List<Lesson>> onChange) {
@@ -38,11 +39,11 @@ public class LessonService {
                     String question = document.getString("question");
                     String title = document.getString("title");
                     String topic = document.getString("topic");
-                    String lessonTitle = document.getString("lessonTitle");
 
                     Long createdAtValue = document.getLong("createdAt");
                     long createdAt = createdAtValue != null ? createdAtValue : System.currentTimeMillis();
 
+                    Lesson.LessonGraph thumbnailGraph = parseGraph(document.get("thumbnailGraph"));
                     List<Lesson.LessonStep> steps = parseSteps(document.get("steps"));
 
                     lessons.add(new Lesson(
@@ -51,8 +52,9 @@ public class LessonService {
                         question != null ? question : "",
                         title != null ? title : "Untitled Lesson",
                         topic != null ? topic : "",
-                        lessonTitle != null ? lessonTitle : "",
                         createdAt,
+                        createdAt,
+                        thumbnailGraph,
                         steps
                     ));
 
@@ -65,7 +67,10 @@ public class LessonService {
     }
 
     public void upsertLesson(String lessonId, Lesson lesson) {
+
+        if(lessonId == null || lesson == null) return;
         firestore.collection("lessons").document(lessonId).set(lesson);
+
     }
 
     private List<Lesson.LessonStep> parseSteps(Object rawSteps) {

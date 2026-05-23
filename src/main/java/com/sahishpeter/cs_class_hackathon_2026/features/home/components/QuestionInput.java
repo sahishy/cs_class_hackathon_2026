@@ -17,8 +17,10 @@ public class QuestionInput extends VBox {
         greetingLabel.getStyleClass().add("h1");
         
         TextField textField = new TextField();
-        textField.getStyleClass().add("question-input");
+        textField.getStyleClass().add("input");
         textField.setMaxWidth(400);
+        textField.setPromptText("Ask a question about math...");
+        textField.setFocusTraversable(false);
 
         getChildren().addAll(greetingLabel, textField);
 

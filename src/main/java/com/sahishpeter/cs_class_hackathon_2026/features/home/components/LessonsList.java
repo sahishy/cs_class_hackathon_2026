@@ -46,6 +46,7 @@ public class LessonsList extends GridPane {
             LessonCard card = new LessonCard(lessons.get(i), lesson -> this.onOpenLesson.accept(lesson.id()));
             add(card, col, row);
 
+
         }
 
     }

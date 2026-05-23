@@ -37,11 +37,14 @@
 
     -fx-padding: 0.6em 1em 0.6em 1em;
 
+    -fx-cursor: hand;
+
 }
 .sidebar-tab.active {
-
     -fx-background-color: -color-neutral6;
-
+}
+.sidebar-tab:hover {
+    -fx-background-color: -color-neutral3;
 }
 
 .sidebar-label {
@@ -53,15 +56,10 @@
 }
 
 .screen {
-
-    -fx-padding: 2em;
-
+    -fx-padding: 0 0 0 2em;
 }
-
 .screen.scroll {
-
-    -fx-padding: 2em 2em 0 2em;
-
+    -fx-padding: 0 2em 0 2em;
 }
 
 /* --- UI --- */
@@ -87,6 +85,14 @@
 
 }
 
+.h4 {
+
+    -fx-text-fill: -color-neutral1;
+    -fx-font-size: 0.8em;
+    -fx-font-weight: bold;
+
+}
+
 .p {
 
     -fx-text-fill: -color-neutral1;
@@ -96,17 +102,27 @@
 
 .card {
 
-    -fx-background-color: -color-neutral5;
+    -fx-background-color: -color-neutral6;
     -fx-background-radius: 1em;
+
+    -fx-border-width: 1px;
+    -fx-border-color: -color-neutral4;
+    -fx-border-radius: 1em;
 
     -fx-padding: 1em;
 
 }
+.card.hoverable {
+    -fx-cursor: hand;
+}
+.card.hoverable:hover {
+    -fx-background-color: #F3F4F633;
+}
 
 .button {
 
-    -fx-background-radius: 1em;
-    -fx-padding: 1em;
+    -fx-background-radius: 999em;
+    -fx-padding: 1em 2em 1em 2em;
 
     -fx-cursor: hand;
 
@@ -119,16 +135,43 @@
     -fx-background-color: black;
 }
 .button.secondary {
+
     -fx-background-color: -color-neutral6;
     -fx-text-fill: -color-neutral0;
-    -fx-border-radius: 1em;
+
+    -fx-border-radius: 999em;
     -fx-border-color: -color-neutral4;
+
     -fx-border-width: 1px;
+
 }
 .button.secondary:hover {
-    -fx-background-color: -color-neutral5;
+    -fx-background-color: #F3F4F633;
 }
 
+.button.icon {
+
+    -fx-min-width: 3em;
+    -fx-min-height: 3em;
+
+    -fx-max-width: 3em;
+    -fx-max-height: 3em;
+
+    -fx-padding: 0;
+
+}
+
+.input {
+    
+    -fx-background-color: -color-neutral5;
+    -fx-background-radius: 999em;
+
+    -fx-padding: 1em 1.2em;
+
+}
+.input:hover {
+    -fx-background-color: -color-neutral4;
+}
 
 .scroll {
 
@@ -167,6 +210,13 @@
     -fx-shape: null;
 }
 
+.edge-fade-top {
+    -fx-background-color: linear-gradient(to bottom, -color-neutral6 0%, rgba(255, 255, 255, 0) 100%);
+}
+.edge-fade-bottom {
+    -fx-background-color: linear-gradient(to top, -color-neutral6 0%, rgba(255, 255, 255, 0) 100%);
+}
+
 
 /* --- FEATURES --- */
 
@@ -175,19 +225,6 @@
 .lessons-list {
 
     /* -fx-background-color: rgb(178, 133, 133); */
-}
-
-.question-input {
-
-    -fx-background-color: -color-neutral5;
-    -fx-padding: 1em 1.6em;
-    -fx-background-radius: 8em;
-
-}
-.question-input:hover {
-
-    -fx-background-color: -color-neutral4;
-
 }
 
 /* graphing */
@@ -214,7 +251,7 @@
 
 .lesson-thumbnail {
 
-    -fx-background-color: white;
+    -fx-background-color: -color-neutral5;
     -fx-background-radius: 1em;
 
 }
@@ -242,91 +279,61 @@
 }
 
 
-
-
-
 /* lesson screen */
-.lesson-content {
-    -fx-padding: 0.5em 0 0 0;
+.lesson-left-pane {
 }
-
-.lesson-left-pane,
 .lesson-right-pane {
-    -fx-fill-width: true;
-}
-
-.lesson-chat-card,
-.lesson-right-card {
-    -fx-background-color: -color-neutral6;
-    -fx-border-color: -color-neutral3;
-    -fx-border-radius: 1em;
-    -fx-background-radius: 1em;
-}
-
-.lesson-chat-card {
     -fx-padding: 1em;
 }
 
-.lesson-messages-container {
-    -fx-spacing: 0.75em;
+.messages {
     -fx-padding: 0.25em;
 }
 
-.lesson-message-row {
+.message-row {
     -fx-alignment: center-left;
 }
 
-.lesson-bubble {
+.message {
     -fx-padding: 0.8em 1em;
     -fx-background-radius: 1em;
-    -fx-border-radius: 1em;
     -fx-font-size: 1em;
 }
 
-.lesson-bubble-ai {
+.message.ai {
     -fx-background-color: -color-neutral5;
-    -fx-border-color: -color-neutral3;
     -fx-text-fill: -color-neutral0;
 }
 
-.lesson-bubble-user {
+.message.user {
     -fx-background-color: -color-neutral0;
     -fx-text-fill: -color-neutral6;
 }
 
-.lesson-input-dock {
+.message-swoosh {
+    -fx-scale-shape: false;
+}
+
+.message-swoosh.ai {
+    -fx-fill: -color-neutral5;
+}
+
+.message-swoosh.user {
+    -fx-fill: -color-neutral0;
+}
+
+.input-dock {
     -fx-padding: 0.5em 0 0 0;
 }
 
-.lesson-input {
-    -fx-background-color: -color-neutral5;
-    -fx-background-radius: 999em;
-    -fx-border-radius: 999em;
-    -fx-border-color: -color-neutral3;
-    -fx-padding: 0.7em 1.1em;
-}
-
-.lesson-send-button {
-    -fx-background-radius: 999em;
-    -fx-min-width: 2.5em;
-    -fx-min-height: 2.5em;
-    -fx-max-width: 2.5em;
-    -fx-max-height: 2.5em;
-    -fx-padding: 0;
-}
-
-.lesson-right-card {
-    -fx-padding: 1em;
-}
-
-.lesson-pagination {
+.pagination {
     -fx-padding: 0.75em 0 0 0;
 }
 
-.lesson-step-label {
+.step-label {
     -fx-text-fill: -color-neutral0;
 }
 
-.lesson-card:hover {
-    -fx-border-color: -color-neutral2;
+.messages-viewport {
+    -fx-fill-width: true;
 }
