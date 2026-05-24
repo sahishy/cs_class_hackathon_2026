@@ -10,9 +10,7 @@ import com.google.genai.types.Part;
 import com.sahishpeter.cs_class_hackathon_2026.features.ai.types.LessonSchema;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
 import com.sahishpeter.cs_class_hackathon_2026.features.math.types.Point;
-
 import io.github.cdimascio.dotenv.Dotenv;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,8 +19,22 @@ public class AIService {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private final String systemPrompt = "You are an expert STEM curriculum builder. Break down complex math topics into highly logical, bite-sized instructional sequences with math expressions or coordinate points.";
-    private final String userPrompt = "Create a detailed structured lesson module about: ";
+    private final String systemPrompt = """
+            You are an expert STEM curriculum builder. Break down complex math topics into highly logical, bite-sized instructional sequences with math expressions or coordinate points. 
+            Critical formatting rules: 
+            (1) Put ALL math notation in latexSnippets only. 
+            (2) In explanation text, reference formulas using [[latex:i]] markers only. 
+            (3) Never write raw math like int x^n, x^2+1, a/b, or equations directly in explanation prose. 
+            (4) Each latexSnippets entry must be valid LaTeX using proper commands such as \\int, \\frac, \\sqrt, \\sum and braces for exponents/subscripts. 
+            (5) Assume each marker renders as a separate block line, so avoid punctuation that depends on inline math continuation (e.g. avoid trailing commas immediately after markers).
+        """;
+    
+    private final String userPrompt = """
+            Create a detailed structured lesson module about: 
+            Return JSON matching the schema exactly. 
+            Example style: explanation='Use the power rule. [[latex:0]] Then substitute values. [[latex:1]]', 
+            latexSnippets=['\\int x^n\\,dx = \\frac{x^{n+1}}{n+1}+C', '\\int x^3\\\\,dx = \\frac{x^4}{4}+C']
+        """;
 
     public CompletableFuture<String> generateLesson(String input) {
 
@@ -94,13 +106,30 @@ public class AIService {
 
             String stepTitle = stepNode.path("title").asText("Step");
             String explanation = stepNode.path("explanation").asText("");
-            String latex = stepNode.path("latex").asText("");
+            List<String> latexSnippets = parseLatexSnippets(stepNode.path("latexSnippets"));
             Lesson.LessonGraph graph = parseGraph(stepNode.path("graph"));
             
-            steps.add(new Lesson.LessonStep(stepTitle, explanation, latex, graph));
+            steps.add(new Lesson.LessonStep(stepTitle, explanation, latexSnippets, graph));
         }
 
         return steps;
+    }
+
+    private List<String> parseLatexSnippets(JsonNode latexSnippetsNode) {
+
+        List<String> latexSnippets = new ArrayList<>();
+        if (!latexSnippetsNode.isArray()) {
+            return latexSnippets;
+        }
+
+        for (JsonNode latexNode : latexSnippetsNode) {
+            if (latexNode.isTextual()) {
+                latexSnippets.add(latexNode.asText());
+            }
+        }
+
+        return latexSnippets;
+
     }
 
     private Lesson.LessonGraph parseGraph(JsonNode graphNode) {

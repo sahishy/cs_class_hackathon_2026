@@ -1,6 +1,9 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.lessons.components;
 
 import com.sahishpeter.cs_class_hackathon_2026.features.math.components.LatexRenderer;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -12,7 +15,9 @@ import javafx.scene.shape.SVGPath;
 
 public class LessonMessageBubble extends HBox {
 
-    public LessonMessageBubble(String sender, String text, String latex) {
+    private static final Pattern LATEX_MARKER_PATTERN = Pattern.compile("\\[\\[latex:(\\d+)\\]\\]");
+
+    public LessonMessageBubble(String sender, String title, String text, List<String> latexSnippets) {
 
         boolean isUser = "user".equals(sender);
 
@@ -29,18 +34,18 @@ public class LessonMessageBubble extends HBox {
         bubble.maxWidthProperty().bind(widthProperty().multiply(0.8));
         bubble.getStyleClass().addAll("message", sender);
 
-        Label textLabel = new Label(text == null ? "" : text);
-        textLabel.setWrapText(true);
-        textLabel.setMinWidth(0);
-        textLabel.setMaxWidth(Double.MAX_VALUE);
-        textLabel.getStyleClass().addAll("message-text", sender);
-        bubble.getChildren().add(textLabel);
-
-        if (!isUser && latex != null && !latex.isBlank()) {
-            bubble.getChildren().add(LatexRenderer.render(latex, 18f));
+        if (!isUser && title != null && !title.isBlank()) {
+            Label titleLabel = new Label(title);
+            titleLabel.setWrapText(true);
+            titleLabel.setMinWidth(0);
+            titleLabel.setMaxWidth(Double.MAX_VALUE);
+            titleLabel.getStyleClass().addAll("message-title", "h3", sender);
+            bubble.getChildren().add(titleLabel);
         }
 
-        SVGPath swoosh = generateSwoosh(sender, isUser);
+        createMessageContent(bubble, sender, text, latexSnippets, isUser);
+
+        SVGPath swoosh = createSwoosh(sender, isUser);
 
         holder.getChildren().addAll(bubble, swoosh);
         swoosh.toBack();
@@ -76,7 +81,61 @@ public class LessonMessageBubble extends HBox {
 
     }
 
-    private SVGPath generateSwoosh(String sender, boolean isUser) {
+    private void createMessageContent(VBox bubble, String sender, String text, List<String> latexSnippets, boolean isUser) {
+
+        String safeText = text == null ? "" : text;
+        List<String> safeLatexSnippets = latexSnippets == null ? List.of() : latexSnippets;
+
+        if (isUser || safeLatexSnippets.isEmpty()) {
+            bubble.getChildren().add(createTextLabel(sender, safeText));
+            return;
+        }
+
+        Matcher matcher = LATEX_MARKER_PATTERN.matcher(safeText);
+        int lastIndex = 0;
+
+        while (matcher.find()) {
+
+            if (matcher.start() > lastIndex) {
+                bubble.getChildren().add(createTextLabel(sender, safeText.substring(lastIndex, matcher.start())));
+            }
+
+            int latexIndex = Integer.parseInt(matcher.group(1));
+            if (latexIndex >= 0 && latexIndex < safeLatexSnippets.size()) {
+                String snippet = safeLatexSnippets.get(latexIndex);
+                if (snippet != null && !snippet.isBlank()) {
+                    bubble.getChildren().add(LatexRenderer.render(snippet, 18f));
+                }
+            } else {
+                bubble.getChildren().add(createTextLabel(sender, matcher.group()));
+            }
+
+            lastIndex = matcher.end();
+
+        }
+
+        if (lastIndex < safeText.length()) {
+            bubble.getChildren().add(createTextLabel(sender, safeText.substring(lastIndex)));
+        }
+
+        if (bubble.getChildren().isEmpty()) {
+            bubble.getChildren().add(createTextLabel(sender, safeText));
+        }
+
+    }
+
+    private Label createTextLabel(String sender, String content) {
+
+        Label textLabel = new Label(content == null ? "" : content);
+        textLabel.setWrapText(true);
+        textLabel.setMinWidth(0);
+        textLabel.setMaxWidth(Double.MAX_VALUE);
+        textLabel.getStyleClass().addAll("message-text", sender);
+        return textLabel;
+
+    }
+
+    private SVGPath createSwoosh(String sender, boolean isUser) {
 
         SVGPath swoosh = new SVGPath();
         swoosh.setContent("M 0 18 C 16 15, 22 8, 26 0 L 8 0 C 12 6, 8 13, 0 18 Z");
@@ -88,6 +147,7 @@ public class LessonMessageBubble extends HBox {
         }
 
         return swoosh;
+
     }
 
 }

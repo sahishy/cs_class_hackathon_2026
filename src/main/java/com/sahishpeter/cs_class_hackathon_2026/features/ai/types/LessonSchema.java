@@ -8,8 +8,6 @@ import java.util.Map;
 
 public final class LessonSchema {
 
-    private LessonSchema() {}
-
     public static final Schema LESSON_OUTPUT_SCHEMA;
 
     static {
@@ -47,12 +45,13 @@ public final class LessonSchema {
 
                 "explanation", Schema.builder()
                     .type(Type.Known.STRING)
-                    .description("Detailed educational text.")
+                    .description("Detailed educational text written in plain language only. Do not include raw math notation, equations, operators, or symbolic expressions here. Reference math only via [[latex:i]] placeholders, where i maps to latexSnippets[i].")
                     .build(),
 
-                "latex", Schema.builder()
-                    .type(Type.Known.STRING)
-                    .description("Optional LaTeX expression to render for this step.")
+                "latexSnippets", Schema.builder()
+                    .type(Type.Known.ARRAY)
+                    .items(Schema.builder().type(Type.Known.STRING).build())
+                    .description("Array of valid LaTeX snippets referenced by [[latex:i]] markers in explanation. Use proper LaTeX commands like \\int, \\frac, \\sqrt, \\sum, braces for exponents/subscripts, and \\, where spacing is needed.")
                     .build(),
 
                 "graph", lessonGraph

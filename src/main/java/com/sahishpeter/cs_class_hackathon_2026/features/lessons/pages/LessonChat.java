@@ -97,8 +97,8 @@ public class LessonChat extends VBox {
             }
 
             long now = System.currentTimeMillis();
-            messages.add(new LessonMessage("user-" + now, "user", text, null, now));
-            messages.add(new LessonMessage("ai-" + now, "ai", "AI response coming soon...", null, now + 1));
+            messages.add(new LessonMessage("user-" + now, "user", null, text, List.of(), now));
+            messages.add(new LessonMessage("ai-" + now, "ai", null, "AI response coming soon...", List.of(), now + 1));
             input.clear();
             renderMessages();
         };
@@ -125,29 +125,15 @@ public class LessonChat extends VBox {
         messages.clear();
 
         List<Lesson.LessonStep> steps = lesson == null || lesson.steps() == null ? List.of() : lesson.steps();
-        if (steps.isEmpty()) {
-
-            long now = System.currentTimeMillis();
-
-            messages.add(new LessonMessage("ai-intro", "ai", "Let's walk through this lesson together.", null, now));
-            messages.add(new LessonMessage("ai-placeholder", "ai", "Lesson steps will appear here soon.", null, now + 1));
-
-            return;
-
-        }
+        if (steps.isEmpty()) return;
 
         int stepIndex = Math.max(0, Math.min(currentStep, steps.size() - 1));
         Lesson.LessonStep step = steps.get(stepIndex);
-        StringBuilder text = new StringBuilder();
-
-        text.append(step.title() == null || step.title().isBlank() ? "Step " + (stepIndex + 1) : step.title());
-        
-        if (step.explanation() != null && !step.explanation().isBlank()) {
-            text.append("\n\n").append(step.explanation());
-        }
+        String stepTitle = step.title() == null || step.title().isBlank() ? "Step " + (stepIndex + 1) : step.title();
+        String explanation = step.explanation() == null ? "" : step.explanation();
 
         long createdAt = lesson.createdAt() > 0 ? lesson.createdAt() : System.currentTimeMillis();
-        messages.add(new LessonMessage("ai-step-" + stepIndex, "ai", text.toString(), step.latex(), createdAt + stepIndex));
+        messages.add(new LessonMessage("ai-step-" + stepIndex, "ai", stepTitle, explanation, step.latexSnippets(), createdAt + stepIndex));
 
     }
 
@@ -157,7 +143,7 @@ public class LessonChat extends VBox {
 
         for (LessonMessage message : messages) {
             messagesContainer.getChildren().add(
-                new LessonMessageBubble(message.sender(), message.text(), message.latex())
+                new LessonMessageBubble(message.sender(), message.title(), message.text(), message.latexSnippets())
             );
         }
         

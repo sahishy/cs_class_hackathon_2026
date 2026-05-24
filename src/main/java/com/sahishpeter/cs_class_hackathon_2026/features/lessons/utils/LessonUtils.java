@@ -58,7 +58,16 @@ public class LessonUtils {
 
                 String stepTitle = stepMap.get("title") instanceof String value ? value : "Step";
                 String explanation = stepMap.get("explanation") instanceof String value ? value : "";
-                String latex = stepMap.get("latex") instanceof String value ? value : "";
+                List<String> latexSnippets = new ArrayList<>();
+                if (stepMap.get("latexSnippets") instanceof List<?> snippetList) {
+                    for (Object item : snippetList) {
+                        if (item instanceof String snippet) {
+                            latexSnippets.add(snippet);
+                        }
+                    }
+                } else if (stepMap.get("latex") instanceof String legacyLatex && !legacyLatex.isBlank()) {
+                    latexSnippets.add(legacyLatex);
+                }
 
                 List<String> stepExpressions = new ArrayList<>();
                 List<Point> stepPoints = new ArrayList<>();
@@ -82,7 +91,7 @@ public class LessonUtils {
                     }
                 }
 
-                steps.add(new Lesson.LessonStep(stepTitle, explanation, latex, new Lesson.LessonGraph(stepExpressions, stepPoints)));
+                steps.add(new Lesson.LessonStep(stepTitle, explanation, latexSnippets, new Lesson.LessonGraph(stepExpressions, stepPoints)));
 
             }
         }
@@ -124,7 +133,7 @@ public class LessonUtils {
                 Map<String, Object> stepMap = new HashMap<>();
                 stepMap.put("title", step.title());
                 stepMap.put("explanation", step.explanation());
-                stepMap.put("latex", step.latex());
+                stepMap.put("latexSnippets", step.latexSnippets() != null ? step.latexSnippets() : List.of());
 
                 Map<String, Object> stepGraph = new HashMap<>();
                 stepGraph.put("expressions", step.graph() != null ? step.graph().expressions() : List.of());

@@ -19,7 +19,7 @@ public record Lesson(
     public record LessonStep(
         String title,
         String explanation,
-        String latex,
+        List<String> latexSnippets,
         LessonGraph graph
     ) {}
 
