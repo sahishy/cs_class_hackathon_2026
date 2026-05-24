@@ -1,5 +1,6 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.home.components;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -12,6 +13,8 @@ public class LessonsList extends GridPane {
 
     private static final double COLUMN_WIDTH = (1.0 / 3) * 100;
     private final Consumer<String> onOpenLesson;
+    private List<Lesson> lessons = List.of();
+    private boolean generatingLesson;
 
     public LessonsList(Consumer<String> onOpenLesson) {
 
@@ -30,22 +33,43 @@ public class LessonsList extends GridPane {
 
         getColumnConstraints().addAll(column1, column2, column3);
 
-        LessonContext.useLessons(this, this::renderLessons);
+        LessonContext.useLessons(this, updatedLessons -> {
+            this.lessons = updatedLessons;
+            renderLessons();
+        });
 
     }
 
-    private void renderLessons(List<Lesson> lessons) {
+    public void setGeneratingLesson(boolean generatingLesson) {
+        this.generatingLesson = generatingLesson;
+        renderLessons();
+    }
+
+    private void renderLessons() {
 
         getChildren().clear();
 
-        for(int i = 0; i < lessons.size(); i++) {
+        List<Lesson> sortedLessons = lessons.stream()
+                .sorted(Comparator.comparingLong(Lesson::updatedAt).reversed())
+                .toList();
 
-            int row = i / 3;
-            int col = i % 3;
 
-            LessonCard card = new LessonCard(lessons.get(i), lesson -> this.onOpenLesson.accept(lesson.id()));
+        int index = 0;
+
+        if (generatingLesson) {
+            add(new LessonCardSkeleton(), 0, 0);
+            index++;
+        }
+
+        for (Lesson lesson : sortedLessons) {
+
+            int row = index / 3;
+            int col = index % 3;
+
+            LessonCard card = new LessonCard(lesson, selectedLesson -> this.onOpenLesson.accept(selectedLesson.id()));
             add(card, col, row);
 
+            index++;
 
         }
 

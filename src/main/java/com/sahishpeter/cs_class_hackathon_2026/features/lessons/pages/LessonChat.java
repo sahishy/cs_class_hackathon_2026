@@ -18,13 +18,17 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class LessonChatPanel extends VBox {
+public class LessonChat extends VBox {
 
+    private final Lesson lesson;
     private final List<LessonMessage> messages = new ArrayList<>();
     private final VBox messagesContainer = new VBox();
     private final VBox messagesArea = new VBox();
+    private int currentStep = 0;
 
-    public LessonChatPanel(Lesson lesson) {
+    public LessonChat(Lesson lesson) {
+
+        this.lesson = lesson;
 
         getStyleClass().add("lesson-left-pane");
 
@@ -33,7 +37,7 @@ public class LessonChatPanel extends VBox {
 
         configureMessagesArea();
 
-        getMessagesFromLesson(lesson);
+        getMessagesFromCurrentStep();
         renderMessages();
 
         StackPane messagesWithTopFade = new StackPane();
@@ -93,8 +97,8 @@ public class LessonChatPanel extends VBox {
             }
 
             long now = System.currentTimeMillis();
-            messages.add(new LessonMessage("user-" + now, "user", text, now));
-            messages.add(new LessonMessage("ai-" + now, "ai", "AI response coming soon...", now + 1));
+            messages.add(new LessonMessage("user-" + now, "user", text, null, now));
+            messages.add(new LessonMessage("ai-" + now, "ai", "AI response coming soon...", null, now + 1));
             input.clear();
             renderMessages();
         };
@@ -108,36 +112,42 @@ public class LessonChatPanel extends VBox {
 
     }
 
-    private void getMessagesFromLesson(Lesson lesson) {
+    public void setCurrentStep(int stepIndex) {
+
+        currentStep = Math.max(0, stepIndex);
+        getMessagesFromCurrentStep();
+        renderMessages();
+
+    }
+
+    private void getMessagesFromCurrentStep() {
 
         messages.clear();
 
-        List<Lesson.LessonStep> steps = lesson.steps() == null ? List.of() : lesson.steps();
+        List<Lesson.LessonStep> steps = lesson == null || lesson.steps() == null ? List.of() : lesson.steps();
         if (steps.isEmpty()) {
 
             long now = System.currentTimeMillis();
 
-            messages.add(new LessonMessage("ai-intro", "ai", "Let's walk through this lesson together.", now));
-            messages.add(new LessonMessage("ai-placeholder", "ai", "Lesson steps will appear here soon.", now + 1));
+            messages.add(new LessonMessage("ai-intro", "ai", "Let's walk through this lesson together.", null, now));
+            messages.add(new LessonMessage("ai-placeholder", "ai", "Lesson steps will appear here soon.", null, now + 1));
 
             return;
 
         }
 
-        long createdAt = lesson.createdAt() > 0 ? lesson.createdAt() : System.currentTimeMillis();
-        for (int i = 0; i < steps.size(); i++) {
+        int stepIndex = Math.max(0, Math.min(currentStep, steps.size() - 1));
+        Lesson.LessonStep step = steps.get(stepIndex);
+        StringBuilder text = new StringBuilder();
 
-            Lesson.LessonStep step = steps.get(i);
-            StringBuilder text = new StringBuilder();
-
-            text.append(step.title() == null || step.title().isBlank() ? "Step " + (i + 1) : step.title());
-            
-            if (step.explanation() != null && !step.explanation().isBlank()) {
-                text.append("\n\n").append(step.explanation());
-            }
-
-            messages.add(new LessonMessage("ai-step-" + i, "ai", text.toString(), createdAt + i));
+        text.append(step.title() == null || step.title().isBlank() ? "Step " + (stepIndex + 1) : step.title());
+        
+        if (step.explanation() != null && !step.explanation().isBlank()) {
+            text.append("\n\n").append(step.explanation());
         }
+
+        long createdAt = lesson.createdAt() > 0 ? lesson.createdAt() : System.currentTimeMillis();
+        messages.add(new LessonMessage("ai-step-" + stepIndex, "ai", text.toString(), step.latex(), createdAt + stepIndex));
 
     }
 
@@ -147,7 +157,7 @@ public class LessonChatPanel extends VBox {
 
         for (LessonMessage message : messages) {
             messagesContainer.getChildren().add(
-                new LessonMessageBubble(message.sender(), message.text())
+                new LessonMessageBubble(message.sender(), message.text(), message.latex())
             );
         }
         

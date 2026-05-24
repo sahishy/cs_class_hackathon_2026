@@ -3,136 +3,112 @@ package com.sahishpeter.cs_class_hackathon_2026.features.lessons.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.ListenerRegistration;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.google.cloud.firestore.WriteResult;
+import com.google.api.core.ApiFuture;
+import com.sahishpeter.cs_class_hackathon_2026.features.ai.services.AIService;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
+import com.sahishpeter.cs_class_hackathon_2026.features.lessons.utils.LessonUtils;
 import com.sahishpeter.cs_class_hackathon_2026.lib.Firebase;
 
 public class LessonService {
 
     private final Firestore firestore;
+    private final AIService aiService;
 
     public LessonService() {
         this.firestore = Firebase.firestore();
+        this.aiService = new AIService();
 
         System.out.println("[LessonService] REAL FIRESTORE LISTENER CREATED");
+    }
+
+    public CompletableFuture<String> createLesson(String userId, String question) {
+
+        if (userId == null || userId.isBlank()) {
+            return CompletableFuture.failedFuture(new IllegalArgumentException("userId is required"));
+        }
+
+        if (question == null || question.isBlank()) {
+            return CompletableFuture.failedFuture(new IllegalArgumentException("question is required"));
+        }
+
+        DocumentReference lessonDoc = firestore.collection("lessons").document();
+        String lessonId = lessonDoc.getId();
+        long timestamp = System.currentTimeMillis();
+        String normalizedQuestion = question.trim();
+
+        return aiService.generateLesson(normalizedQuestion)
+                .thenApply(json -> aiService.parseLessonFromJson(json, lessonId, userId, normalizedQuestion, timestamp))
+                .thenApply(aiLesson -> new Lesson(
+                    lessonId,
+                    userId,
+                    normalizedQuestion,
+                    aiLesson.title(),
+                    aiLesson.topic(),
+                    timestamp,
+                    timestamp,
+                    aiLesson.thumbnailGraph(),
+                    aiLesson.steps()))
+                .thenCompose(finalLesson -> upsertLesson(lessonId, finalLesson).thenApply(ignored -> lessonId));
+
     }
 
     public ListenerRegistration subscribeToLessons(String userId, Consumer<List<Lesson>> onChange) {
 
         return firestore.collection("lessons")
-            .whereEqualTo("userId", userId)
-            .addSnapshotListener((snapshot, error) -> {
+                .whereEqualTo("userId", userId)
+                .addSnapshotListener((snapshot, error) -> {
 
-                if (error != null || snapshot == null) {
-                    return;
-                }
+                    if (error != null || snapshot == null) {
+                        return;
+                    }
 
-                List<Lesson> lessons = new ArrayList<>();
+                    List<Lesson> lessons = new ArrayList<>();
 
-                for (QueryDocumentSnapshot document : snapshot) {
+                    for (QueryDocumentSnapshot document : snapshot) {
+                        lessons.add(LessonUtils.fromDocument(document));
+                    }
 
-                    String lessonId = document.getId();
-                    String lessonUserId = document.getString("userId");
-                    String question = document.getString("question");
-                    String title = document.getString("title");
-                    String topic = document.getString("topic");
+                    onChange.accept(lessons);
 
-                    Long createdAtValue = document.getLong("createdAt");
-                    long createdAt = createdAtValue != null ? createdAtValue : System.currentTimeMillis();
-
-                    Lesson.LessonGraph thumbnailGraph = parseGraph(document.get("thumbnailGraph"));
-                    List<Lesson.LessonStep> steps = parseSteps(document.get("steps"));
-
-                    lessons.add(new Lesson(
-                        lessonId,
-                        lessonUserId != null ? lessonUserId : "",
-                        question != null ? question : "",
-                        title != null ? title : "Untitled Lesson",
-                        topic != null ? topic : "",
-                        createdAt,
-                        createdAt,
-                        thumbnailGraph,
-                        steps
-                    ));
-
-                }
-
-                onChange.accept(lessons);
-
-            });
+                });
 
     }
 
-    public void upsertLesson(String lessonId, Lesson lesson) {
+    public CompletableFuture<Void> upsertLesson(String lessonId, Lesson lesson) {
 
-        if(lessonId == null || lesson == null) return;
-        firestore.collection("lessons").document(lessonId).set(lesson);
-
-    }
-
-    private List<Lesson.LessonStep> parseSteps(Object rawSteps) {
-
-        List<Lesson.LessonStep> steps = new ArrayList<>();
-
-        if (!(rawSteps instanceof List<?> rawList)) {
-            return steps;
+        if (lessonId == null || lesson == null) {
+            return CompletableFuture.failedFuture(new IllegalArgumentException("lessonId and lesson are required"));
         }
 
-        for (Object rawStep : rawList) {
-            if (!(rawStep instanceof Map<?, ?> map)) {
-                continue;
+        Map<String, Object> map = LessonUtils.toFirestoreMap(lesson);
+        if(map == null) {
+            return CompletableFuture.failedFuture(new RuntimeException("toFirestoreMap failed"));
+        }
+
+        return CompletableFuture.supplyAsync(() -> {
+
+            try {
+
+                ApiFuture<WriteResult> writeFuture = firestore.collection("lessons")
+                        .document(lessonId)
+                        .set(map);
+                
+                writeFuture.get();
+                return null;
+
+            } catch (Exception exception) {
+                throw new RuntimeException(exception.getMessage(), exception);
             }
 
-            String title = map.get("title") instanceof String value ? value : "Step";
-            String explanation = map.get("explanation") instanceof String value ? value : "";
-            Lesson.LessonGraph graph = parseGraph(map.get("graph"));
-
-            steps.add(new Lesson.LessonStep(title, explanation, graph));
-        }
-
-        return steps;
-
-    }
-
-    private Lesson.LessonGraph parseGraph(Object rawGraph) {
-
-        if (!(rawGraph instanceof Map<?, ?> map)) {
-            return new Lesson.LessonGraph("function", List.of(), List.of());
-        }
-
-        String type = map.get("type") instanceof String value ? value : "function";
-
-        List<String> expressions = new ArrayList<>();
-        Object rawExpressions = map.get("expressions");
-        if (rawExpressions instanceof List<?> list) {
-            for (Object item : list) {
-                if (item instanceof String expression) {
-                    expressions.add(expression);
-                }
-            }
-        }
-
-        List<List<Double>> points = new ArrayList<>();
-        Object rawPoints = map.get("points");
-        if (rawPoints instanceof List<?> list) {
-            for (Object row : list) {
-                if (!(row instanceof List<?> pointPair) || pointPair.size() < 2) {
-                    continue;
-                }
-
-                Object xRaw = pointPair.get(0);
-                Object yRaw = pointPair.get(1);
-
-                if (xRaw instanceof Number x && yRaw instanceof Number y) {
-                    points.add(List.of(x.doubleValue(), y.doubleValue()));
-                }
-            }
-        }
-
-        return new Lesson.LessonGraph(type, expressions, points);
+        });
 
     }
 

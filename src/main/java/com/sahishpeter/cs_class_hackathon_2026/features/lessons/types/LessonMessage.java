@@ -4,5 +4,6 @@ public record LessonMessage(
     String id, 
     String sender, 
     String text, 
+    String latex,
     long createdAt
 ) {}

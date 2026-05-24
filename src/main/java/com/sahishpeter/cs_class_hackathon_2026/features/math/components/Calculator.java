@@ -1,8 +1,8 @@
-package com.sahishpeter.cs_class_hackathon_2026.features.calculator.components;
+package com.sahishpeter.cs_class_hackathon_2026.features.math.components;
 
 import java.util.ArrayList;
 
-import com.sahishpeter.cs_class_hackathon_2026.features.calculator.types.Point;
+import com.sahishpeter.cs_class_hackathon_2026.features.math.types.Point;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;

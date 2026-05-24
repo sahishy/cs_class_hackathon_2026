@@ -2,6 +2,8 @@ package com.sahishpeter.cs_class_hackathon_2026.features.lessons.types;
 
 import java.util.List;
 
+import com.sahishpeter.cs_class_hackathon_2026.features.math.types.Point;
+
 public record Lesson(
     String id,
     String userId,
@@ -17,13 +19,13 @@ public record Lesson(
     public record LessonStep(
         String title,
         String explanation,
+        String latex,
         LessonGraph graph
     ) {}
 
     public record LessonGraph(
-        String type,
         List<String> expressions,
-        List<List<Double>> points
+        List<Point> points
     ) {}
     
 }

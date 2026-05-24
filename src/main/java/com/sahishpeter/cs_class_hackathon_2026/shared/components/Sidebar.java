@@ -1,6 +1,7 @@
 package com.sahishpeter.cs_class_hackathon_2026.shared.components;
 
 import java.util.List;
+import java.util.Comparator;
 import java.util.function.Consumer;
 
 import com.sahishpeter.cs_class_hackathon_2026.app.AppLayout;
@@ -93,7 +94,11 @@ public class Sidebar extends VBox {
 
         lessonsHolder.getChildren().clear();
 
-        for (Lesson lesson : lessons) {
+        List<Lesson> sortedLessons = lessons.stream()
+            .sorted(Comparator.comparingLong(Lesson::updatedAt).reversed())
+            .toList();
+
+        for (Lesson lesson : sortedLessons) {
             String id = lesson.id();
             String title = lesson.title() == null || lesson.title().isBlank() ? "Untitled Lesson" : lesson.title();
 
