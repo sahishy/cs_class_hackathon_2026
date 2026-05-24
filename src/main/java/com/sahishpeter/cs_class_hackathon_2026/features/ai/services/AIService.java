@@ -20,21 +20,55 @@ public class AIService {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final String systemPrompt = """
-            You are an expert STEM curriculum builder. Break down complex math topics into highly logical, bite-sized instructional sequences with math expressions or coordinate points. 
-            Critical formatting rules: 
-            (1) Put ALL math notation in latexSnippets only. 
-            (2) In explanation text, reference formulas using [[latex:i]] markers only. 
-            (3) Never write raw math like int x^n, x^2+1, a/b, or equations directly in explanation prose. 
-            (4) Each latexSnippets entry must be valid LaTeX using proper commands such as \\int, \\frac, \\sqrt, \\sum and braces for exponents/subscripts. 
-            (5) Assume each marker renders as a separate block line, so avoid punctuation that depends on inline math continuation (e.g. avoid trailing commas immediately after markers).
-        """;
-    
-    private final String userPrompt = """
-            Create a detailed structured lesson module about: 
-            Return JSON matching the schema exactly. 
-            Example style: explanation='Use the power rule. [[latex:0]] Then substitute values. [[latex:1]]', 
-            latexSnippets=['\\int x^n\\,dx = \\frac{x^{n+1}}{n+1}+C', '\\int x^3\\\\,dx = \\frac{x^4}{4}+C']
-        """;
+                You are an expert STEM curriculum builder. You must create a detailed structured lesson module about the user's question.
+
+                You must output JSON matching the schema exactly.
+
+                Each lesson step has an ordered content array:
+                {"type":"text","value":"..."}
+                {"type":"latex","value":"..."}
+
+                ABSOLUTE RULES:
+                1. Text blocks must contain words only.
+                2. Text blocks must never contain mathematical notation.
+                3. Text blocks must never contain:
+                    - dollar signs: $
+                    - backslash LaTeX commands: \\int, \\frac, \\sqrt, etc.
+                    - variables written as symbols: x, y, n, f(x), dx
+                    - equations or operators: =, +, -, *, /, ^, <, >
+                    - coordinate pairs like (1, 2)
+                    - inline math of any kind
+                4. If a sentence needs math, split it into:
+                    - one text block explaining the idea
+                    - one latex block containing the math
+                    - another text block continuing the explanation
+
+                BAD text block:
+                "We use the rule $\\int x^n dx = \\frac{x^{n+1}}{n+1}+C$, where C is constant."
+
+                GOOD content blocks:
+                [
+                    {"type":"text","value":"We use the general power rule for integration."},
+                    {"type":"latex","value":"\\int x^n\\,dx = \\frac{x^{n+1}}{n+1}+C"},
+                    {"type":"text","value":"The extra constant accounts for all possible antiderivatives."}
+                ]
+
+                BAD text block:
+                "We want to find the integral of f(x)=3x^2."
+
+                GOOD content blocks:
+                [
+                    {"type":"text","value":"We want to find the antiderivative of the given function."},
+                    {"type":"latex","value":"f(x)=3x^2"}
+                ]
+
+                Latex block rules:
+                1. All formulas, equations, integrals, derivatives, functions, variables, symbolic expressions, coordinate points, and algebraic work must go in latex blocks.
+                2. Latex blocks must contain valid LaTeX only.
+                3. Do not put explanatory English sentences in latex blocks.
+
+                Before returning JSON, silently check every text block. If it contains math notation, rewrite it by moving the math into a latex block.
+            """;
 
     public CompletableFuture<String> generateLesson(String input) {
 
@@ -47,14 +81,14 @@ public class AIService {
                 GenerateContentConfig config = GenerateContentConfig.builder()
                         .responseMimeType("application/json")
                         .responseSchema(LessonSchema.LESSON_OUTPUT_SCHEMA)
-                        .temperature(0.2f) 
+                        .temperature(0.2f)
                         .systemInstruction(systemPromptContent)
                         .build();
 
                 String apiKey = resolveApiKey();
                 Client client = Client.builder().apiKey(apiKey).build();
 
-                GenerateContentResponse response = client.models.generateContent("gemini-2.5-flash-lite", userPrompt + input, config);
+                GenerateContentResponse response = client.models.generateContent("gemini-2.5-flash-lite", input, config);
 
                 System.out.println(response.text());
 
@@ -105,30 +139,32 @@ public class AIService {
         for (JsonNode stepNode : stepsNode) {
 
             String stepTitle = stepNode.path("title").asText("Step");
-            String explanation = stepNode.path("explanation").asText("");
-            List<String> latexSnippets = parseLatexSnippets(stepNode.path("latexSnippets"));
+            List<Lesson.LessonContentBlock> content = parseContentBlocks(stepNode.path("content"));
             Lesson.LessonGraph graph = parseGraph(stepNode.path("graph"));
-            
-            steps.add(new Lesson.LessonStep(stepTitle, explanation, latexSnippets, graph));
+
+            steps.add(new Lesson.LessonStep(stepTitle, content, graph));
         }
 
         return steps;
     }
 
-    private List<String> parseLatexSnippets(JsonNode latexSnippetsNode) {
+    private List<Lesson.LessonContentBlock> parseContentBlocks(JsonNode contentNode) {
 
-        List<String> latexSnippets = new ArrayList<>();
-        if (!latexSnippetsNode.isArray()) {
-            return latexSnippets;
+        List<Lesson.LessonContentBlock> contentBlocks = new ArrayList<>();
+        if (!contentNode.isArray()) {
+            return contentBlocks;
         }
 
-        for (JsonNode latexNode : latexSnippetsNode) {
-            if (latexNode.isTextual()) {
-                latexSnippets.add(latexNode.asText());
+        for (JsonNode contentBlockNode : contentNode) {
+            String type = contentBlockNode.path("type").asText("").trim().toLowerCase();
+            String value = contentBlockNode.path("value").asText("");
+
+            if (("text".equals(type) || "latex".equals(type)) && !value.isBlank()) {
+                contentBlocks.add(new Lesson.LessonContentBlock(type, value));
             }
         }
 
-        return latexSnippets;
+        return contentBlocks;
 
     }
 

@@ -1,9 +1,8 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.lessons.components;
 
+import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
 import com.sahishpeter.cs_class_hackathon_2026.features.math.components.LatexRenderer;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -15,9 +14,7 @@ import javafx.scene.shape.SVGPath;
 
 public class LessonMessageBubble extends HBox {
 
-    private static final Pattern LATEX_MARKER_PATTERN = Pattern.compile("\\[\\[latex:(\\d+)\\]\\]");
-
-    public LessonMessageBubble(String sender, String title, String text, List<String> latexSnippets) {
+    public LessonMessageBubble(String sender, String title, List<Lesson.LessonContentBlock> content) {
 
         boolean isUser = "user".equals(sender);
 
@@ -43,7 +40,7 @@ public class LessonMessageBubble extends HBox {
             bubble.getChildren().add(titleLabel);
         }
 
-        createMessageContent(bubble, sender, text, latexSnippets, isUser);
+        createMessageContent(bubble, sender, content, isUser);
 
         SVGPath swoosh = createSwoosh(sender, isUser);
 
@@ -81,45 +78,25 @@ public class LessonMessageBubble extends HBox {
 
     }
 
-    private void createMessageContent(VBox bubble, String sender, String text, List<String> latexSnippets, boolean isUser) {
+    private void createMessageContent(VBox bubble, String sender, List<Lesson.LessonContentBlock> content, boolean isUser) {
 
-        String safeText = text == null ? "" : text;
-        List<String> safeLatexSnippets = latexSnippets == null ? List.of() : latexSnippets;
+        List<Lesson.LessonContentBlock> safeContent = content == null ? List.of() : content;
 
-        if (isUser || safeLatexSnippets.isEmpty()) {
-            bubble.getChildren().add(createTextLabel(sender, safeText));
-            return;
-        }
-
-        Matcher matcher = LATEX_MARKER_PATTERN.matcher(safeText);
-        int lastIndex = 0;
-
-        while (matcher.find()) {
-
-            if (matcher.start() > lastIndex) {
-                bubble.getChildren().add(createTextLabel(sender, safeText.substring(lastIndex, matcher.start())));
+        for (Lesson.LessonContentBlock block : safeContent) {
+            if (block == null || block.type() == null || block.value() == null || block.value().isBlank()) {
+                continue;
             }
 
-            int latexIndex = Integer.parseInt(matcher.group(1));
-            if (latexIndex >= 0 && latexIndex < safeLatexSnippets.size()) {
-                String snippet = safeLatexSnippets.get(latexIndex);
-                if (snippet != null && !snippet.isBlank()) {
-                    bubble.getChildren().add(LatexRenderer.render(snippet, 18f));
-                }
+            String type = block.type().trim().toLowerCase();
+            if (type.equals("latex") && !isUser) {
+                bubble.getChildren().add(LatexRenderer.render(block.value(), 18f));
             } else {
-                bubble.getChildren().add(createTextLabel(sender, matcher.group()));
+                bubble.getChildren().add(createTextLabel(sender, block.value()));
             }
-
-            lastIndex = matcher.end();
-
-        }
-
-        if (lastIndex < safeText.length()) {
-            bubble.getChildren().add(createTextLabel(sender, safeText.substring(lastIndex)));
         }
 
         if (bubble.getChildren().isEmpty()) {
-            bubble.getChildren().add(createTextLabel(sender, safeText));
+            bubble.getChildren().add(createTextLabel(sender, ""));
         }
 
     }

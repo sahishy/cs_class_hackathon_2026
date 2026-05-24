@@ -6,7 +6,6 @@ public record LessonMessage(
     String id, 
     String sender, 
     String title,
-    String text, 
-    List<String> latexSnippets,
+    List<Lesson.LessonContentBlock> content,
     long createdAt
 ) {}

@@ -18,9 +18,13 @@ public record Lesson(
 
     public record LessonStep(
         String title,
-        String explanation,
-        List<String> latexSnippets,
+        List<LessonContentBlock> content,
         LessonGraph graph
+    ) {}
+
+    public record LessonContentBlock(
+        String type,
+        String value
     ) {}
 
     public record LessonGraph(

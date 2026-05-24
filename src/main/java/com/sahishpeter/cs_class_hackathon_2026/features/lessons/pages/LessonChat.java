@@ -97,10 +97,25 @@ public class LessonChat extends VBox {
             }
 
             long now = System.currentTimeMillis();
-            messages.add(new LessonMessage("user-" + now, "user", null, text, List.of(), now));
-            messages.add(new LessonMessage("ai-" + now, "ai", null, "AI response coming soon...", List.of(), now + 1));
+            messages.add(new LessonMessage(
+                "user-" + now,
+                "user",
+                null,
+                List.of(new Lesson.LessonContentBlock("text", text)),
+                now
+            ));
+            messages.add(new LessonMessage(
+                "ai-" + now,
+                "ai",
+                null,
+                List.of(new Lesson.LessonContentBlock("text", "AI response coming soon...")),
+                now + 1
+            ));
             input.clear();
             renderMessages();
+
+            // add mini step generation based on user questions
+
         };
 
         sendButton.setOnAction(event -> send.run());
@@ -130,10 +145,9 @@ public class LessonChat extends VBox {
         int stepIndex = Math.max(0, Math.min(currentStep, steps.size() - 1));
         Lesson.LessonStep step = steps.get(stepIndex);
         String stepTitle = step.title() == null || step.title().isBlank() ? "Step " + (stepIndex + 1) : step.title();
-        String explanation = step.explanation() == null ? "" : step.explanation();
 
         long createdAt = lesson.createdAt() > 0 ? lesson.createdAt() : System.currentTimeMillis();
-        messages.add(new LessonMessage("ai-step-" + stepIndex, "ai", stepTitle, explanation, step.latexSnippets(), createdAt + stepIndex));
+        messages.add(new LessonMessage("ai-step-" + stepIndex, "ai", stepTitle, step.content(), createdAt + stepIndex));
 
     }
 
@@ -143,7 +157,7 @@ public class LessonChat extends VBox {
 
         for (LessonMessage message : messages) {
             messagesContainer.getChildren().add(
-                new LessonMessageBubble(message.sender(), message.title(), message.text(), message.latexSnippets())
+                new LessonMessageBubble(message.sender(), message.title(), message.content())
             );
         }
         

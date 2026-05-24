@@ -57,16 +57,35 @@ public class LessonUtils {
                 }
 
                 String stepTitle = stepMap.get("title") instanceof String value ? value : "Step";
-                String explanation = stepMap.get("explanation") instanceof String value ? value : "";
-                List<String> latexSnippets = new ArrayList<>();
-                if (stepMap.get("latexSnippets") instanceof List<?> snippetList) {
-                    for (Object item : snippetList) {
-                        if (item instanceof String snippet) {
-                            latexSnippets.add(snippet);
+                List<Lesson.LessonContentBlock> content = new ArrayList<>();
+                if (stepMap.get("content") instanceof List<?> contentList) {
+                    for (Object item : contentList) {
+                        if (item instanceof Map<?, ?> contentMap) {
+                            Object typeRaw = contentMap.get("type");
+                            Object valueRaw = contentMap.get("value");
+                            if (typeRaw instanceof String type && valueRaw instanceof String blockValue) {
+                                String normalizedType = type.trim().toLowerCase();
+                                if (("text".equals(normalizedType) || "latex".equals(normalizedType)) && !blockValue.isBlank()) {
+                                    content.add(new Lesson.LessonContentBlock(normalizedType, blockValue));
+                                }
+                            }
                         }
                     }
-                } else if (stepMap.get("latex") instanceof String legacyLatex && !legacyLatex.isBlank()) {
-                    latexSnippets.add(legacyLatex);
+                } else {
+                    String explanation = stepMap.get("explanation") instanceof String value ? value : "";
+                    if (!explanation.isBlank()) {
+                        content.add(new Lesson.LessonContentBlock("text", explanation));
+                    }
+
+                    if (stepMap.get("latexSnippets") instanceof List<?> snippetList) {
+                        for (Object item : snippetList) {
+                            if (item instanceof String snippet && !snippet.isBlank()) {
+                                content.add(new Lesson.LessonContentBlock("latex", snippet));
+                            }
+                        }
+                    } else if (stepMap.get("latex") instanceof String legacyLatex && !legacyLatex.isBlank()) {
+                        content.add(new Lesson.LessonContentBlock("latex", legacyLatex));
+                    }
                 }
 
                 List<String> stepExpressions = new ArrayList<>();
@@ -91,7 +110,7 @@ public class LessonUtils {
                     }
                 }
 
-                steps.add(new Lesson.LessonStep(stepTitle, explanation, latexSnippets, new Lesson.LessonGraph(stepExpressions, stepPoints)));
+                steps.add(new Lesson.LessonStep(stepTitle, content, new Lesson.LessonGraph(stepExpressions, stepPoints)));
 
             }
         }
@@ -132,8 +151,29 @@ public class LessonUtils {
             for (Lesson.LessonStep step : lesson.steps()) {
                 Map<String, Object> stepMap = new HashMap<>();
                 stepMap.put("title", step.title());
-                stepMap.put("explanation", step.explanation());
-                stepMap.put("latexSnippets", step.latexSnippets() != null ? step.latexSnippets() : List.of());
+                List<Map<String, Object>> content = new ArrayList<>();
+                if (step.content() != null) {
+                    for (Lesson.LessonContentBlock block : step.content()) {
+                        if (block == null || block.type() == null || block.value() == null) {
+                            continue;
+                        }
+
+                        String normalizedType = block.type().trim().toLowerCase();
+                        if (!"text".equals(normalizedType) && !"latex".equals(normalizedType)) {
+                            continue;
+                        }
+
+                        if (block.value().isBlank()) {
+                            continue;
+                        }
+
+                        Map<String, Object> blockMap = new HashMap<>();
+                        blockMap.put("type", normalizedType);
+                        blockMap.put("value", block.value());
+                        content.add(blockMap);
+                    }
+                }
+                stepMap.put("content", content);
 
                 Map<String, Object> stepGraph = new HashMap<>();
                 stepGraph.put("expressions", step.graph() != null ? step.graph().expressions() : List.of());

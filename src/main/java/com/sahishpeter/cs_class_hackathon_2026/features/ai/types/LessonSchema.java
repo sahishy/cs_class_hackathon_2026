@@ -43,20 +43,30 @@ public final class LessonSchema {
                     .description("Title of this step.")
                     .build(),
 
-                "explanation", Schema.builder()
-                    .type(Type.Known.STRING)
-                    .description("Detailed educational text written in plain language only. Do not include raw math notation, equations, operators, or symbolic expressions here. Reference math only via [[latex:i]] placeholders, where i maps to latexSnippets[i].")
-                    .build(),
-
-                "latexSnippets", Schema.builder()
+                "content", Schema.builder()
                     .type(Type.Known.ARRAY)
-                    .items(Schema.builder().type(Type.Known.STRING).build())
-                    .description("Array of valid LaTeX snippets referenced by [[latex:i]] markers in explanation. Use proper LaTeX commands like \\int, \\frac, \\sqrt, \\sum, braces for exponents/subscripts, and \\, where spacing is needed.")
+                    .items(
+                        Schema.builder()
+                            .type(Type.Known.OBJECT)
+                            .properties(Map.of(
+                                "type", Schema.builder()
+                                    .type(Type.Known.STRING)
+                                    .description("Block type. Must be either 'text' or 'latex'.")
+                                    .build(),
+                                "value", Schema.builder()
+                                    .type(Type.Known.STRING)
+                                    .description("The text or LaTeX string content for this block.")
+                                    .build()
+                            ))
+                            .required(List.of("type", "value"))
+                            .build()
+                    )
+                    .description("Ordered content blocks for this step. Use type='text' for prose and type='latex' for equations.")
                     .build(),
 
                 "graph", lessonGraph
             ))
-            .required(List.of("title", "explanation", "graph"))
+            .required(List.of("title", "content", "graph"))
             .build();
 
         LESSON_OUTPUT_SCHEMA = Schema.builder()
