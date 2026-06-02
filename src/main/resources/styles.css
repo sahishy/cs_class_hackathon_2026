@@ -251,10 +251,12 @@
 /* graphing */
 
 .graph {
-
-    -fx-border-color: black;
-
+    -fx-border-radius: 1em;
 }
+.graph.border {
+    -fx-border-color: -color-neutral1;
+}
+
 
 .point-holder {
     
@@ -269,6 +271,11 @@
 }
 
 /* lessons */
+
+.lesson-card:hover .graph {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
 
 .lesson-thumbnail {
 

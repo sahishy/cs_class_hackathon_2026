@@ -2,6 +2,7 @@ package com.sahishpeter.cs_class_hackathon_2026.features.lessons.types;
 
 import java.util.List;
 
+import com.sahishpeter.cs_class_hackathon_2026.features.math.types.GraphShade;
 import com.sahishpeter.cs_class_hackathon_2026.features.math.types.Point;
 
 public record Lesson(
@@ -29,7 +30,9 @@ public record Lesson(
 
     public record LessonGraph(
         List<String> expressions,
-        List<Point> points
+        List<Point> points,
+        List<GraphShade> shades
     ) {}
     
 }
+

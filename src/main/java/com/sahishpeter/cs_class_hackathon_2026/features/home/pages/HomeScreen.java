@@ -4,15 +4,18 @@ import java.util.function.Consumer;
 import com.sahishpeter.cs_class_hackathon_2026.features.home.components.LessonsList;
 import com.sahishpeter.cs_class_hackathon_2026.features.home.components.QuestionInput;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.services.LessonService;
+import com.sahishpeter.cs_class_hackathon_2026.features.math.components.LatexRenderer;
 import com.sahishpeter.cs_class_hackathon_2026.features.user.contexts.UserContext;
 import com.sahishpeter.cs_class_hackathon_2026.shared.components.EdgeFadeOverlay;
 import javafx.geometry.Pos;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import com.sahishpeter.cs_class_hackathon_2026.features.math.components.LatexRenderer;
 
 public class HomeScreen extends VBox {
 

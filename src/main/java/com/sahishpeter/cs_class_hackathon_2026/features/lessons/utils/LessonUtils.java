@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
+import com.sahishpeter.cs_class_hackathon_2026.features.math.types.GraphShade;
 import com.sahishpeter.cs_class_hackathon_2026.features.math.types.Point;
 
 public class LessonUtils {
@@ -24,6 +25,7 @@ public class LessonUtils {
         Map<?, ?> graphMap = document.get("thumbnailGraph") instanceof Map<?, ?> map ? map : null;
         List<String> expressions = new ArrayList<>();
         List<Point> points = new ArrayList<>();
+        List<GraphShade> shades = new ArrayList<>();
 
         if (graphMap != null) {
             Object rawExpressions = graphMap.get("expressions");
@@ -43,9 +45,19 @@ public class LessonUtils {
                     }
                 }
             }
+
+            Object rawShades = graphMap.get("shades");
+            if (rawShades instanceof List<?> shadeList) {
+                for (Object item : shadeList) {
+                    GraphShade parsedShade = parseShade(item);
+                    if (parsedShade != null) {
+                        shades.add(parsedShade);
+                    }
+                }
+            }
         }
 
-        Lesson.LessonGraph thumbnailGraph = new Lesson.LessonGraph(expressions, points);
+        Lesson.LessonGraph thumbnailGraph = new Lesson.LessonGraph(expressions, points, shades);
         
         List<Lesson.LessonStep> steps = new ArrayList<>();
         Object rawSteps = document.get("steps");
@@ -90,6 +102,7 @@ public class LessonUtils {
 
                 List<String> stepExpressions = new ArrayList<>();
                 List<Point> stepPoints = new ArrayList<>();
+                List<GraphShade> stepShades = new ArrayList<>();
                 if (stepMap.get("graph") instanceof Map<?, ?> stepGraphMap) {
                     Object rawStepExpressions = stepGraphMap.get("expressions");
                     if (rawStepExpressions instanceof List<?> expressionList) {
@@ -108,9 +121,19 @@ public class LessonUtils {
                             }
                         }
                     }
+
+                    Object rawStepShades = stepGraphMap.get("shades");
+                    if (rawStepShades instanceof List<?> shadeList) {
+                        for (Object item : shadeList) {
+                            GraphShade parsedShade = parseShade(item);
+                            if (parsedShade != null) {
+                                stepShades.add(parsedShade);
+                            }
+                        }
+                    }
                 }
 
-                steps.add(new Lesson.LessonStep(stepTitle, content, new Lesson.LessonGraph(stepExpressions, stepPoints)));
+                steps.add(new Lesson.LessonStep(stepTitle, content, new Lesson.LessonGraph(stepExpressions, stepPoints, stepShades)));
 
             }
         }
@@ -144,13 +167,17 @@ public class LessonUtils {
                 lesson.thumbnailGraph() != null ? lesson.thumbnailGraph().expressions() : List.of());
         thumbnailGraph.put("points",
                 toPointMaps(lesson.thumbnailGraph() != null ? lesson.thumbnailGraph().points() : List.of()));
+        thumbnailGraph.put("shades",
+                toShadeMaps(lesson.thumbnailGraph() != null ? lesson.thumbnailGraph().shades() : List.of()));
         map.put("thumbnailGraph", thumbnailGraph);
 
         List<Map<String, Object>> steps = new ArrayList<>();
         if (lesson.steps() != null) {
             for (Lesson.LessonStep step : lesson.steps()) {
+
                 Map<String, Object> stepMap = new HashMap<>();
                 stepMap.put("title", step.title());
+                
                 List<Map<String, Object>> content = new ArrayList<>();
                 if (step.content() != null) {
                     for (Lesson.LessonContentBlock block : step.content()) {
@@ -178,6 +205,7 @@ public class LessonUtils {
                 Map<String, Object> stepGraph = new HashMap<>();
                 stepGraph.put("expressions", step.graph() != null ? step.graph().expressions() : List.of());
                 stepGraph.put("points", toPointMaps(step.graph() != null ? step.graph().points() : List.of()));
+                stepGraph.put("shades", toShadeMaps(step.graph() != null ? step.graph().shades() : List.of()));
                 stepMap.put("graph", stepGraph);
 
                 steps.add(stepMap);
@@ -207,6 +235,29 @@ public class LessonUtils {
 
     }
 
+    private static List<Map<String, Object>> toShadeMaps(List<GraphShade> shades) {
+
+        List<Map<String, Object>> mappedShades = new ArrayList<>();
+        if (shades == null) {
+            return mappedShades;
+        }
+
+        for (GraphShade shade : shades) {
+            if (shade == null || shade.expression() == null || shade.expression().isBlank()) {
+                continue;
+            }
+
+            Map<String, Object> mappedShade = new HashMap<>();
+            mappedShade.put("leftEndpoint", shade.leftEndpoint());
+            mappedShade.put("rightEndpoint", shade.rightEndpoint());
+            mappedShade.put("expression", shade.expression());
+            mappedShades.add(mappedShade);
+        }
+
+        return mappedShades;
+
+    }
+
     private static Point parsePoint(Object rawPoint) {
 
         if (rawPoint instanceof Map<?, ?> pointMap
@@ -223,6 +274,27 @@ public class LessonUtils {
         }
 
         return null;
+
+    }
+
+    private static GraphShade parseShade(Object rawShade) {
+
+        if (!(rawShade instanceof Map<?, ?> shadeMap)) {
+            return null;
+        }
+
+        Object leftRaw = shadeMap.get("leftEndpoint");
+        Object rightRaw = shadeMap.get("rightEndpoint");
+        Object expressionRaw = shadeMap.get("expression");
+
+        if (!(leftRaw instanceof Number left)
+                || !(rightRaw instanceof Number right)
+                || !(expressionRaw instanceof String expression)
+                || expression.isBlank()) {
+            return null;
+        }
+
+        return new GraphShade(left.doubleValue(), right.doubleValue(), expression);
 
     }
 

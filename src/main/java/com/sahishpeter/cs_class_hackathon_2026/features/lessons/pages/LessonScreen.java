@@ -1,8 +1,14 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.lessons.pages;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.contexts.LessonContext;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
-import com.sahishpeter.cs_class_hackathon_2026.features.math.components.Calculator;
+import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson.LessonGraph;
+import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson.LessonStep;
+import com.sahishpeter.cs_class_hackathon_2026.features.math.components.Graph;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,7 +25,7 @@ public class LessonScreen extends VBox {
     private Button prevButton;
     private Button nextButton;
     private Label stepLabel;
-    private Calculator calculator;
+    private Graph graph;
     private LessonChat leftPane;
     private Label test;
 
@@ -76,7 +82,7 @@ public class LessonScreen extends VBox {
 
         VBox.setVgrow(content, Priority.ALWAYS);
         getChildren().add(content);
-        
+
     }
 
     private VBox buildRightPane(Lesson lesson) {
@@ -86,12 +92,12 @@ public class LessonScreen extends VBox {
         rightPane.setPrefWidth(420);
 
         VBox calculatorHolder = new VBox();
-        calculatorHolder.setAlignment(Pos.TOP_CENTER);
+        calculatorHolder.setAlignment(Pos.CENTER_RIGHT);
         VBox.setVgrow(calculatorHolder, Priority.ALWAYS);
 
-        Calculator calculator = new Calculator();
+        graph = new Graph(new LessonGraph(new ArrayList(List.of("y = x")), null, null), 396, true);
 
-        calculatorHolder.getChildren().add(calculator);
+        calculatorHolder.getChildren().add(graph);
 
         test = new Label(lesson.steps().get(currentStep).toString());
         test.setWrapText(true);
@@ -149,7 +155,8 @@ public class LessonScreen extends VBox {
         HBox.setHgrow(rightSpacer, Priority.ALWAYS);
 
         pagination.getChildren().addAll(prevButton, leftSpacer, stepLabel, rightSpacer, nextButton);
-        rightPane.getChildren().addAll(calculatorHolder, test, pagination);
+        rightPane.getChildren().addAll(calculatorHolder, pagination);
+        // rightPane.getChildren().addAll(calculatorHolder, test, pagination);
 
         return rightPane;
 
@@ -160,9 +167,16 @@ public class LessonScreen extends VBox {
         int count = lesson.steps() == null ? 0 : lesson.steps().size();
         stepLabel.setText(count == 0 ? "Step 1" : "Step " + (currentStep + 1));
 
-        // calculator.update(lesson.thumbnailGraph());
+        System.out.println("updating graph");
 
-        test.setText(lesson.steps().get(currentStep).toString());
+        if (graph != null) {
+            LessonStep lessonStep = lesson.steps().get(currentStep);
+            graph.updateGraph(lessonStep.graph());
+            test.setText(lessonStep.toString());
+
+            System.out.println(lessonStep.graph());
+
+        }
 
     }
 
@@ -177,5 +191,5 @@ public class LessonScreen extends VBox {
         nextButton.setText(isFinalStep ? "Done" : "Next");
 
     }
-    
+
 }

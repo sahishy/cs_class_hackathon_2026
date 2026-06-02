@@ -2,11 +2,13 @@ package com.sahishpeter.cs_class_hackathon_2026.features.lessons.pages;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.components.LessonMessageBubble;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.LessonMessage;
 import com.sahishpeter.cs_class_hackathon_2026.shared.components.Card;
 import com.sahishpeter.cs_class_hackathon_2026.shared.components.EdgeFadeOverlay;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -50,7 +52,7 @@ public class LessonChat extends VBox {
 
         BorderPane chatLayout = new BorderPane();
         chatLayout.setCenter(messagesWithTopFade);
-        chatLayout.setBottom(buildInputDock());
+        // chatLayout.setBottom(buildInputDock());
         BorderPane.setMargin(messagesWithTopFade, new Insets(0, 0, 8, 0));
 
         chatCard.getChildren().add(chatLayout);

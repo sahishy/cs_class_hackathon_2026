@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.ListenerRegistration;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.WriteResult;
-import com.google.api.core.ApiFuture;
 import com.sahishpeter.cs_class_hackathon_2026.features.ai.services.AIService;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
 import com.sahishpeter.cs_class_hackathon_2026.features.lessons.utils.LessonUtils;
@@ -57,7 +57,7 @@ public class LessonService {
                     aiLesson.thumbnailGraph(),
                     aiLesson.steps()))
                 .thenCompose(finalLesson -> upsertLesson(lessonId, finalLesson).thenApply(ignored -> lessonId));
-
+        
     }
 
     public ListenerRegistration subscribeToLessons(String userId, Consumer<List<Lesson>> onChange) {

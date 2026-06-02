@@ -39,7 +39,7 @@ public final class LessonContext extends BaseContext {
         String userId = UserContext.getCurrentUserId();
         listenerInstanceCount++;
         long listenerId = listenerInstanceCount;
-        System.out.println("[LessonContext] creating Firestore listener #" + listenerId + " for userId=" + userId);
+        System.out.println("[LessonContext] creating firestore listener " + listenerId + " for user id=" + userId);
         lessonListener = lessonService.subscribeToLessons(userId, updatedLessons -> {
 
             synchronized (this) {

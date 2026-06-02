@@ -1,14 +1,19 @@
 package com.sahishpeter.cs_class_hackathon_2026.features.home.components;
 
 import java.util.function.Consumer;
+
+import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
+import com.sahishpeter.cs_class_hackathon_2026.features.math.components.Graph;
+import com.sahishpeter.cs_class_hackathon_2026.shared.components.Card;
+import com.sahishpeter.cs_class_hackathon_2026.shared.utils.Formatters;
+
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
-import javafx.geometry.Pos;
-import com.sahishpeter.cs_class_hackathon_2026.features.lessons.types.Lesson;
-import com.sahishpeter.cs_class_hackathon_2026.shared.components.Card;
-import com.sahishpeter.cs_class_hackathon_2026.shared.utils.Formatters;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class LessonCard extends VBox {
 
@@ -16,15 +21,22 @@ public class LessonCard extends VBox {
 
         Card card = new Card();
         card.setPrefHeight(256);
-        card.getStyleClass().add("hoverable");
+        card.getStyleClass().addAll("hoverable", "lesson-card");
         card.setOnMouseClicked(event -> onOpenLesson.accept(lesson));
 
         VBox thumbnailHolder = new VBox();
         thumbnailHolder.setFillWidth(true);
         thumbnailHolder.setPrefHeight(128);
         thumbnailHolder.getStyleClass().add("lesson-thumbnail");
-        Label tempLabel = new Label(lesson.thumbnailGraph().expressions().getFirst());
-        thumbnailHolder.getChildren().add(tempLabel);
+
+        Rectangle clipRectangle = new Rectangle();
+        clipRectangle.widthProperty().bind(thumbnailHolder.widthProperty());
+        clipRectangle.heightProperty().bind(thumbnailHolder.heightProperty());
+        clipRectangle.setFill(Color.RED);
+        thumbnailHolder.setClip(clipRectangle);
+
+        Graph graph = new Graph(lesson.thumbnailGraph(), 200, false);
+        thumbnailHolder.getChildren().add(graph);
 
         String title = lesson.title();
         String topic = lesson.topic().toUpperCase();

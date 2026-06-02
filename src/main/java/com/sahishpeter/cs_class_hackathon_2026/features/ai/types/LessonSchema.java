@@ -18,7 +18,7 @@ public final class LessonSchema {
                 "expressions", Schema.builder()
                     .type(Type.Known.ARRAY)
                     .items(Schema.builder().type(Type.Known.STRING).build())
-                    .description("Function expressions to render on the graph.")
+                    .description("Function expressions to render on the graph. These must be pure functions (e.g. x^2, sin(x), 2(x+3)). Nothing else should be added, like 'from 0 to 2' for example.")
                     .build(),
 
                 "points", Schema.builder()
@@ -30,6 +30,31 @@ public final class LessonSchema {
                             .build()
                     )
                     .description("Coordinate points as [x, y] pairs.")
+                    .build(),
+
+                "shades", Schema.builder()
+                    .type(Type.Known.ARRAY)
+                    .items(
+                        Schema.builder()
+                            .type(Type.Known.OBJECT)
+                            .properties(Map.of(
+                                "leftEndpoint", Schema.builder()
+                                    .type(Type.Known.NUMBER)
+                                    .description("Left x-bound for shading.")
+                                    .build(),
+                                "rightEndpoint", Schema.builder()
+                                    .type(Type.Known.NUMBER)
+                                    .description("Right x-bound for shading.")
+                                    .build(),
+                                "expression", Schema.builder()
+                                    .type(Type.Known.STRING)
+                                    .description("Function expression, the shaded region will be below when y > 0 and above when y < 0.")
+                                    .build()
+                            ))
+                            .required(List.of("leftEndpoint", "rightEndpoint", "expression"))
+                            .build()
+                    )
+                    .description("Optional shaded regions on the graph.")
                     .build()
             ))
             .build();
@@ -55,7 +80,7 @@ public final class LessonSchema {
                                     .build(),
                                 "value", Schema.builder()
                                     .type(Type.Known.STRING)
-                                    .description("The text or LaTeX string content for this block.")
+                                    .description("The text or LaTeX string content for this block. Latex should be eqnarray")
                                     .build()
                             ))
                             .required(List.of("type", "value"))
